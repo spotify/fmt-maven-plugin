@@ -44,6 +44,8 @@ Add to your pom.xml
 
 `verbose` is whether the plugin should print a line for every file that is being formatted. It defaults to `false`.
 
+`filesNamePattern` represents the pattern that filters files to format. The defaults value is set to `.*\.java`.
+
 example:
 ```xml
 <build>
@@ -56,6 +58,7 @@ example:
                 <sourceDirectory>some/source/directory</sourceDirectory>
                 <testSourceDirectory>some/test/directory</testSourceDirectory>
                 <verbose>true</verbose>
+                <filesNamePattern>.*\.java</filesNamePattern>
                 <additionalSourceDirectories>
                     <param>some/dir</param>
                     <param>some/other/dir</param>
