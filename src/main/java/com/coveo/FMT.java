@@ -1,12 +1,11 @@
 package com.coveo;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.google.common.base.Charsets;
+import com.google.common.io.CharSink;
+import com.google.common.io.CharSource;
+import com.google.common.io.Files;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -15,15 +14,15 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharSink;
-import com.google.common.io.CharSource;
-import com.google.common.io.Files;
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * <p>FMT class.</p>
+ * FMT class.
  *
  * @author guisim
  * @version $Id: $Id
@@ -62,7 +61,7 @@ public class FMT extends AbstractMojo {
   private List<String> filesFormatted = new ArrayList<String>();
 
   /**
-   * <p>execute.</p>
+   * execute.
    *
    * @throws org.apache.maven.plugin.MojoExecutionException if any.
    */
@@ -95,7 +94,7 @@ public class FMT extends AbstractMojo {
   }
 
   /**
-   * <p>Getter for the field <code>filesFormatted</code>.</p>
+   * Getter for the field <code>filesFormatted</code>.
    *
    * @return a {@link java.util.List} object.
    */
@@ -144,7 +143,11 @@ public class FMT extends AbstractMojo {
     CharSource source = Files.asCharSource(file, Charsets.UTF_8);
     CharSink sink = Files.asCharSink(file, Charsets.UTF_8);
     try {
-      formatter.formatSource(source, sink);
+      String input = source.read();
+      String output = formatter.formatSource(input);
+      if (!input.equals(output)) {
+        sink.write(output);
+      }
       filesFormatted.add(file.getAbsolutePath());
       if (filesFormatted.size() % 100 == 0) {
         logNumberOfFilesFormatted();
