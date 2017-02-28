@@ -58,7 +58,11 @@ public class FMT extends AbstractMojo {
   @Parameter(defaultValue = ".*\\.java", property = "filesNamePattern")
   private String filesNamePattern;
 
+  @Parameter(defaultValue = "false", property = "validateOnly")
+  private boolean validateOnly;
+
   private List<String> filesFormatted = new ArrayList<String>();
+  private int nonComplyingFiles;
 
   /**
    * execute.
@@ -90,6 +94,7 @@ public class FMT extends AbstractMojo {
       formatSourceFilesInDirectory(directoryToFormat);
     }
 
+    maybeFailIfNonComplying();
     logNumberOfFilesFormatted();
   }
 
@@ -146,7 +151,10 @@ public class FMT extends AbstractMojo {
       String input = source.read();
       String output = formatter.formatSource(input);
       if (!input.equals(output)) {
-        sink.write(output);
+        if (!validateOnly) {
+          sink.write(output);
+        }
+        nonComplyingFiles += 1;
       }
       filesFormatted.add(file.getAbsolutePath());
       if (filesFormatted.size() % 100 == 0) {
@@ -176,6 +184,22 @@ public class FMT extends AbstractMojo {
   }
 
   private void logNumberOfFilesFormatted() {
-    logger.info("Successfully formatted " + filesFormatted.size() + " files.");
+    logger.info(
+        String.format(
+            "Processed %d files (%d %s).",
+            filesFormatted.size(),
+            nonComplyingFiles,
+            (validateOnly ? "non-complying" : "reformatted")));
+  }
+
+  private void maybeFailIfNonComplying() throws MojoFailureException {
+    if (validateOnly && nonComplyingFiles > 0) {
+      String message =
+          "Found "
+              + nonComplyingFiles
+              + " non-complying files, failing build (validateOnly is true)";
+      logger.error(message);
+      throw new MojoFailureException(message);
+    }
   }
 }

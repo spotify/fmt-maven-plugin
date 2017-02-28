@@ -76,6 +76,18 @@ public class FMTTest {
     assertThat(fmt.getFilesFormatted()).hasSize(1);
   }
 
+  @Test(expected = MojoFailureException.class)
+  public void validateOnlyFailsWhenNotFormatted() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("validateonly_notformatted"), FORMAT);
+    fmt.execute();
+  }
+
+  @Test
+  public void validateOnlySucceedsWhenFormatted() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("validateonly_formatted"), FORMAT);
+    fmt.execute();
+  }
+
   public File loadPom(String folderName) {
     return new File("src/test/resources/", folderName);
   }
