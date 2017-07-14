@@ -11,6 +11,7 @@ import org.junit.Test;
 
 public class FMTTest {
   private static String FORMAT = "format";
+  private static String CHECK = "check";
 
   @Rule public MojoRule mojoRule = new MojoRule();
 
@@ -104,6 +105,18 @@ public class FMTTest {
   public void withCleanImports() throws Exception {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("importclean"), FORMAT);
     fmt.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void checkFailsWhenNotFormatted() throws Exception {
+    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("check_notformatted"), CHECK);
+    check.execute();
+  }
+
+  @Test
+  public void checkSucceedsWhenFormatted() throws Exception {
+    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("check_formatted"), CHECK);
+    check.execute();
   }
 
   public File loadPom(String folderName) {
