@@ -101,6 +101,60 @@ example:
 </build>
 ```
 
+
+
+### check Options
+
+`displayFiles` default = true. Display the list of the files that are not compliant
+
+`displayLimit` default = 100. Number of files to display that are not compliant`
+
+example to not display the non-compliant files:
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>com.coveo</groupId>
+            <artifactId>fmt-maven-plugin</artifactId>
+            <version>1.10.0</version>
+            <configuration>
+                <displayFiles>false</displayFiles>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
+example to limit the display up to 10 files
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>com.coveo</groupId>
+            <artifactId>fmt-maven-plugin</artifactId>
+            <version>1.10.0</version>
+            <configuration>
+                <displayLimit>10</displayLimit>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
 ### Command line
 
 You can also use it on the command line

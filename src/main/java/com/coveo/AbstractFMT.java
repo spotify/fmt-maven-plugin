@@ -9,22 +9,21 @@ import com.google.googlejavaformat.java.FormatterException;
 import com.google.googlejavaformat.java.ImportOrderer;
 import com.google.googlejavaformat.java.RemoveUnusedImports;
 import com.google.googlejavaformat.java.RemoveUnusedImports.JavadocOnlyImports;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Parameter;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AbstractFMT extends AbstractMojo {
-  private Log logger = getLog();
-  private Formatter formatter = new Formatter();
+  protected Log logger = getLog();
+  protected Formatter formatter = new Formatter();
 
   @Parameter(
     defaultValue = "${project.build.sourceDirectory}",
@@ -52,8 +51,8 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = ".*\\.java", property = "filesNamePattern")
   private String filesNamePattern;
 
-  private List<String> filesFormatted = new ArrayList<String>();
-  private int nonComplyingFiles;
+  protected List<String> filesFormatted = new ArrayList<String>();
+  protected int nonComplyingFiles;
 
   /**
    * execute.
@@ -149,6 +148,7 @@ public abstract class AbstractFMT extends AbstractMojo {
         if (!isValidateOnly()) {
           sink.write(formatted);
         }
+        nonComplyingFile(file);
         nonComplyingFiles += 1;
       }
       filesFormatted.add(file.getAbsolutePath());
@@ -161,6 +161,9 @@ public abstract class AbstractFMT extends AbstractMojo {
       logger.warn("Failed to format file '" + file + "'.", e);
     }
   }
+
+  /** Hook called when the given file is not compliant. */
+  protected void nonComplyingFile(File file) {}
 
   private void handleMissingDirectory(String directoryDisplayName, File directory)
       throws MojoFailureException {
@@ -194,7 +197,11 @@ public abstract class AbstractFMT extends AbstractMojo {
               + nonComplyingFiles
               + " non-complying files, failing build (validateOnly is true)";
       logger.error(message);
+      additionalFailComplying();
       throw new MojoFailureException(message);
     }
   }
+
+  /** Display optional statistics on the files that are not complying */
+  protected void additionalFailComplying() {}
 }
