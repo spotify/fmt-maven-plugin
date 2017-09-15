@@ -20,7 +20,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("nosource"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesFormatted()).isEmpty();
+    assertThat(fmt.getFilesProcessed()).isEmpty();
   }
 
   @Test
@@ -28,7 +28,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("notestsource"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesFormatted()).hasSize(2);
+    assertThat(fmt.getFilesProcessed()).hasSize(2);
   }
 
   @Test
@@ -36,7 +36,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("onlytestsources"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesFormatted()).hasSize(1);
+    assertThat(fmt.getFilesProcessed()).hasSize(1);
   }
 
   @Test
@@ -44,7 +44,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesFormatted()).hasSize(3);
+    assertThat(fmt.getFilesProcessed()).hasSize(3);
   }
 
   @Test
@@ -52,7 +52,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonerrorwithsources"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesFormatted()).isNotEmpty();
+    assertThat(fmt.getFilesProcessed()).isNotEmpty();
   }
 
   @Test(expected = MojoFailureException.class)
@@ -66,7 +66,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("additionalfolders"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesFormatted()).hasSize(8);
+    assertThat(fmt.getFilesProcessed()).hasSize(8);
   }
 
   @Test
@@ -74,31 +74,32 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("onlyavajsources"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesFormatted()).hasSize(1);
+    assertThat(fmt.getFilesProcessed()).hasSize(1);
   }
 
   @Test(expected = MojoFailureException.class)
   public void validateOnlyFailsWhenNotFormatted() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("validateonly_notformatted"), FORMAT);
-    fmt.execute();
+    Check check =
+        (Check) mojoRule.lookupConfiguredMojo(loadPom("validateonly_notformatted"), CHECK);
+    check.execute();
   }
 
   @Test
   public void validateOnlySucceedsWhenFormatted() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("validateonly_formatted"), FORMAT);
-    fmt.execute();
+    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("validateonly_formatted"), CHECK);
+    check.execute();
   }
 
   @Test(expected = MojoFailureException.class)
   public void withUnusedImports() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("importunused"), FORMAT);
-    fmt.execute();
+    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("importunused"), CHECK);
+    check.execute();
   }
 
   @Test(expected = MojoFailureException.class)
   public void withUnsortedImports() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("importunsorted"), FORMAT);
-    fmt.execute();
+    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("importunsorted"), CHECK);
+    check.execute();
   }
 
   @Test

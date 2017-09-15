@@ -1,7 +1,6 @@
 package com.coveo;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 import com.google.googlejavaformat.java.Formatter;
@@ -22,8 +21,8 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AbstractFMT extends AbstractMojo {
-  protected Log logger = getLog();
-  protected Formatter formatter = new Formatter();
+  private Log logger = getLog();
+  private Formatter formatter = new Formatter();
 
   @Parameter(
     defaultValue = "${project.build.sourceDirectory}",
@@ -51,8 +50,8 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = ".*\\.java", property = "filesNamePattern")
   private String filesNamePattern;
 
-  protected List<String> filesFormatted = new ArrayList<String>();
-  protected int nonComplyingFiles;
+  private List<String> filesProcessed = new ArrayList<String>();
+  private int nonComplyingFiles;
 
   /**
    * execute.
@@ -84,20 +83,29 @@ public abstract class AbstractFMT extends AbstractMojo {
       formatSourceFilesInDirectory(directoryToFormat);
     }
 
-    maybeFailIfNonComplying();
-    logNumberOfFilesFormatted();
+    logNumberOfFilesProcessed();
+    postExecute(this.filesProcessed, this.nonComplyingFiles);
   }
 
   /**
-   * Getter for the field <code>filesFormatted</code>.
+   * Post Execute action. It is called at the end of the execute method. Subclasses can add extra
+   * checks.
+   *
+   * @param filesProcessed the list of processed files by the formatter
+   * @param nonComplyingFiles the number of files that are not compliant
+   * @throws MojoFailureException if there is an exception
+   */
+  protected void postExecute(List<String> filesProcessed, int nonComplyingFiles)
+      throws MojoFailureException {}
+
+  /**
+   * Getter for the field <code>filesProcessed</code>.
    *
    * @return a {@link java.util.List} object.
    */
-  public List<String> getFilesFormatted() {
-    return filesFormatted;
+  public List<String> getFilesProcessed() {
+    return filesProcessed;
   }
-
-  protected abstract boolean isValidateOnly();
 
   private void formatSourceFilesInDirectory(File directory) {
     if (!directory.isDirectory()) {
@@ -138,22 +146,18 @@ public abstract class AbstractFMT extends AbstractMojo {
     }
 
     CharSource source = Files.asCharSource(file, Charsets.UTF_8);
-    CharSink sink = Files.asCharSink(file, Charsets.UTF_8);
     try {
       String input = source.read();
       String formatted = formatter.formatSource(input);
       formatted = RemoveUnusedImports.removeUnusedImports(formatted, JavadocOnlyImports.KEEP);
       formatted = ImportOrderer.reorderImports(formatted);
       if (!input.equals(formatted)) {
-        if (!isValidateOnly()) {
-          sink.write(formatted);
-        }
-        nonComplyingFile(file);
+        onNonComplyingFile(file, formatted);
         nonComplyingFiles += 1;
       }
-      filesFormatted.add(file.getAbsolutePath());
-      if (filesFormatted.size() % 100 == 0) {
-        logNumberOfFilesFormatted();
+      filesProcessed.add(file.getAbsolutePath());
+      if (filesProcessed.size() % 100 == 0) {
+        logNumberOfFilesProcessed();
       }
     } catch (FormatterException e) {
       logger.warn("Failed to format file '" + file + "'.", e);
@@ -161,9 +165,6 @@ public abstract class AbstractFMT extends AbstractMojo {
       logger.warn("Failed to format file '" + file + "'.", e);
     }
   }
-
-  /** Hook called when the given file is not compliant. */
-  protected void nonComplyingFile(File file) {}
 
   private void handleMissingDirectory(String directoryDisplayName, File directory)
       throws MojoFailureException {
@@ -181,27 +182,26 @@ public abstract class AbstractFMT extends AbstractMojo {
     }
   }
 
-  private void logNumberOfFilesFormatted() {
-    logger.info(
-        String.format(
-            "Processed %d files (%d %s).",
-            filesFormatted.size(),
-            nonComplyingFiles,
-            (isValidateOnly() ? "non-complying" : "reformatted")));
+  protected void logNumberOfFilesProcessed() {
+    getLog()
+        .info(
+            String.format(
+                "Processed %d files (%d %s).",
+                filesProcessed.size(), nonComplyingFiles, getProcessingLabel()));
   }
 
-  private void maybeFailIfNonComplying() throws MojoFailureException {
-    if (isValidateOnly() && nonComplyingFiles > 0) {
-      String message =
-          "Found "
-              + nonComplyingFiles
-              + " non-complying files, failing build (validateOnly is true)";
-      logger.error(message);
-      additionalFailComplying();
-      throw new MojoFailureException(message);
-    }
-  }
+  /**
+   * Hook called when the processd file is not compliant with the formatter.
+   *
+   * @param file the file that is not compliant
+   * @param formatted the corresponding formatted of the file.
+   */
+  protected abstract void onNonComplyingFile(File file, String formatted) throws IOException;
 
-  /** Display optional statistics on the files that are not complying */
-  protected void additionalFailComplying() {}
+  /**
+   * Provides the name of the label used when a non-formatted file is found.
+   *
+   * @return the label to use in the log
+   */
+  protected abstract String getProcessingLabel();
 }
