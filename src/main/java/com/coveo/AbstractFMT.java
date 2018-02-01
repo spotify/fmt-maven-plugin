@@ -59,6 +59,10 @@ public abstract class AbstractFMT extends AbstractMojo {
    * @throws org.apache.maven.plugin.MojoExecutionException if any.
    */
   public void execute() throws MojoExecutionException, MojoFailureException {
+    if (System.getProperty("fmt.skip") != null) {
+      logger.info("Skipping format check");
+      return;
+    }
     List<File> directoriesToFormat = new ArrayList<File>();
     if (sourceDirectory.exists()) {
       directoriesToFormat.add(sourceDirectory);
