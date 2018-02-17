@@ -71,6 +71,8 @@ If you prefer, you can only check formatting at build time using the `check` goa
 
 `filesNamePattern` represents the pattern that filters files to format. The defaults value is set to `.*\.java`.
 
+`style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
+
 example:
 ```xml
 <build>
@@ -88,6 +90,7 @@ example:
                     <param>some/dir</param>
                     <param>some/other/dir</param>
                 </additionalSourceDirectories>
+                <style>google</style>
             </configuration>
             <executions>
                 <execution>
@@ -108,6 +111,8 @@ example:
 `displayFiles` default = true. Display the list of the files that are not compliant
 
 `displayLimit` default = 100. Number of files to display that are not compliant`
+
+`style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
 
 example to not display the non-compliant files:
 ```xml

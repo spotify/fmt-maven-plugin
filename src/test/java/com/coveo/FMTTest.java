@@ -48,6 +48,22 @@ public class FMTTest {
   }
 
   @Test
+  public void withAllTypesOfSourcesWithAospStyleSpecified() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple_aosp"), FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getFilesProcessed()).hasSize(3);
+  }
+
+  @Test
+  public void withAllTypesOfSourcesWithGoogleStyleSpecified() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple_google"), FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getFilesProcessed()).hasSize(3);
+  }
+
+  @Test
   public void failOnUnknownFolderDoesNotFailWhenEverythingIsThere() throws Exception {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonerrorwithsources"), FORMAT);
     fmt.execute();
@@ -58,6 +74,12 @@ public class FMTTest {
   @Test(expected = MojoFailureException.class)
   public void failOnUnknownFolderFailsWhenAFolderIsMissing() throws Exception {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonerrormissingsources"), FORMAT);
+    fmt.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void failOnUnknownStyle() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonunknownstyle"), FORMAT);
     fmt.execute();
   }
 
