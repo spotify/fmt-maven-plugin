@@ -50,6 +50,9 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = ".*\\.java", property = "filesNamePattern")
   private String filesNamePattern;
 
+  @Parameter(defaultValue = "false", property = "fmt.skip")
+  private boolean skip;
+
   private List<String> filesProcessed = new ArrayList<String>();
   private int nonComplyingFiles;
 
@@ -59,7 +62,7 @@ public abstract class AbstractFMT extends AbstractMojo {
    * @throws org.apache.maven.plugin.MojoExecutionException if any.
    */
   public void execute() throws MojoExecutionException, MojoFailureException {
-    if (System.getProperty("fmt.skip") != null) {
+    if (skip) {
       logger.info("Skipping format check");
       return;
     }
