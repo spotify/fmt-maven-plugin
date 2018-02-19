@@ -51,7 +51,7 @@ public abstract class AbstractFMT extends AbstractMojo {
   private String filesNamePattern;
 
   @Parameter(defaultValue = "false", property = "fmt.skip")
-  private boolean skip;
+  private boolean skip = false;
 
   private List<String> filesProcessed = new ArrayList<String>();
   private int nonComplyingFiles;
