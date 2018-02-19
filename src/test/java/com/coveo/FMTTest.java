@@ -60,7 +60,7 @@ public class FMTTest {
     List<String> lines =
         IOUtils.readLines(
             getClass().getResourceAsStream("/simple_aosp/src/main/java/HelloWorld1.java"));
-    assertThat(lines.get(3)).startsWith("    ");
+    assertThat(lines.get(3)).startsWith("    public");
   }
 
   @Test
@@ -74,7 +74,7 @@ public class FMTTest {
     List<String> lines =
         IOUtils.readLines(
             getClass().getResourceAsStream("/simple_google/src/main/java/HelloWorld1.java"));
-    assertThat(lines.get(3)).startsWith("  ");
+    assertThat(lines.get(3)).startsWith("  public");
   }
 
   @Test
