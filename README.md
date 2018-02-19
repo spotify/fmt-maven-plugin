@@ -71,6 +71,8 @@ If you prefer, you can only check formatting at build time using the `check` goa
 
 `filesNamePattern` represents the pattern that filters files to format. The defaults value is set to `.*\.java`.
 
+`skip` is whether the plugin should skip the operation.
+
 example:
 ```xml
 <build>
@@ -88,6 +90,7 @@ example:
                     <param>some/dir</param>
                     <param>some/other/dir</param>
                 </additionalSourceDirectories>
+                <skip>false</skip>
             </configuration>
             <executions>
                 <execution>
@@ -163,6 +166,8 @@ You can also use it on the command line
 
 You can pass parameters via standard `-D` syntax.
 `mvn com.coveo:fmt-maven-plugin:format -Dverbose=true`
+
+`-Dfmt.skip` is whether the plugin should skip the operation.
 
 
 ### Deploy
