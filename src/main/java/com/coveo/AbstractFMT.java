@@ -3,10 +3,7 @@ package com.coveo;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
-import com.google.googlejavaformat.java.ImportOrderer;
-import com.google.googlejavaformat.java.RemoveUnusedImports;
+import com.google.googlejavaformat.java.*;
 import com.google.googlejavaformat.java.RemoveUnusedImports.JavadocOnlyImports;
 import java.io.File;
 import java.io.FileFilter;
@@ -22,7 +19,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AbstractFMT extends AbstractMojo {
   private Log logger = getLog();
-  private Formatter formatter = new Formatter();
+  /** Lazily initialized based on style. Use formatter() for access. */
+  private Formatter formatter;
 
   @Parameter(
     defaultValue = "${project.build.sourceDirectory}",
@@ -52,6 +50,9 @@ public abstract class AbstractFMT extends AbstractMojo {
 
   @Parameter(defaultValue = "false", property = "fmt.skip")
   private boolean skip = false;
+
+  @Parameter(defaultValue = "google", property = "style")
+  private String style;
 
   private List<String> filesProcessed = new ArrayList<String>();
   private int nonComplyingFiles;
@@ -114,7 +115,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     return filesProcessed;
   }
 
-  private void formatSourceFilesInDirectory(File directory) {
+  private void formatSourceFilesInDirectory(File directory) throws MojoFailureException {
     if (!directory.isDirectory()) {
       logger.info("Directory '" + directory + "' is not a directory. Skipping.");
       return;
@@ -130,6 +131,27 @@ public abstract class AbstractFMT extends AbstractMojo {
     }
   }
 
+  private JavaFormatterOptions.Style style() throws MojoFailureException {
+    if ("aosp".equalsIgnoreCase(style)) {
+      logger.debug("Using AOSP style");
+      return JavaFormatterOptions.Style.AOSP;
+    }
+    if ("google".equalsIgnoreCase(style)) {
+      logger.debug("Using Google style");
+      return JavaFormatterOptions.Style.GOOGLE;
+    }
+    String message = "Unknown style '" + style + "'. Expected 'google' or 'aosp'.";
+    logger.error(message);
+    throw new MojoFailureException(message);
+  }
+
+  private synchronized Formatter formatter() throws MojoFailureException {
+    if (formatter == null) {
+      formatter = new Formatter(JavaFormatterOptions.builder().style(style()).build());
+    }
+    return formatter;
+  }
+
   private FileFilter getFileFilter() {
     if (verbose) {
       logger.debug("Filter files on '" + filesNamePattern + "'.");
@@ -142,7 +164,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     };
   }
 
-  private void formatSourceFile(File file) {
+  private void formatSourceFile(File file) throws MojoFailureException {
     if (file.isDirectory()) {
       logger.info("File '" + file + "' is a directory. Skipping.");
       return;
@@ -155,7 +177,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     CharSource source = Files.asCharSource(file, Charsets.UTF_8);
     try {
       String input = source.read();
-      String formatted = formatter.formatSource(input);
+      String formatted = formatter().formatSource(input);
       formatted = RemoveUnusedImports.removeUnusedImports(formatted, JavadocOnlyImports.KEEP);
       formatted = ImportOrderer.reorderImports(formatted);
       if (!input.equals(formatted)) {

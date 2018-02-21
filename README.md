@@ -25,7 +25,7 @@ To have your sources automatically formatted on each build, add to your pom.xml:
             <plugin>
                 <groupId>com.coveo</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
-                <version>2.2.0</version>
+                <version>2.3.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -46,7 +46,7 @@ If you prefer, you can only check formatting at build time using the `check` goa
             <plugin>
                 <groupId>com.coveo</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
-                <version>2.2.0</version>
+                <version>2.3.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -73,6 +73,8 @@ If you prefer, you can only check formatting at build time using the `check` goa
 
 `skip` is whether the plugin should skip the operation.
 
+`style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
+
 example:
 ```xml
 <build>
@@ -80,7 +82,7 @@ example:
         <plugin>
             <groupId>com.coveo</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
-            <version>2.2.0</version>
+            <version>2.3.0</version>
             <configuration>
                 <sourceDirectory>some/source/directory</sourceDirectory>
                 <testSourceDirectory>some/test/directory</testSourceDirectory>
@@ -91,6 +93,7 @@ example:
                     <param>some/other/dir</param>
                 </additionalSourceDirectories>
                 <skip>false</skip>
+                <style>google</style>
             </configuration>
             <executions>
                 <execution>
@@ -112,6 +115,8 @@ example:
 
 `displayLimit` default = 100. Number of files to display that are not compliant`
 
+`style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
+
 example to not display the non-compliant files:
 ```xml
 <build>
@@ -119,7 +124,7 @@ example to not display the non-compliant files:
         <plugin>
             <groupId>com.coveo</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
-            <version>2.2.0</version>
+            <version>2.3.0</version>
             <configuration>
                 <displayFiles>false</displayFiles>
             </configuration>
@@ -142,7 +147,7 @@ example to limit the display up to 10 files
         <plugin>
             <groupId>com.coveo</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
-            <version>2.2.0</version>
+            <version>2.3.0</version>
             <configuration>
                 <displayLimit>10</displayLimit>
             </configuration>

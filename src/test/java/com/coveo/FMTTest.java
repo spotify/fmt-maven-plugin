@@ -3,7 +3,9 @@ package com.coveo;
 import static com.google.common.truth.Truth.*;
 
 import java.io.File;
+import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.Rule;
@@ -48,6 +50,34 @@ public class FMTTest {
   }
 
   @Test
+  public void withAllTypesOfSourcesWithAospStyleSpecified() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple_aosp"), FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getFilesProcessed()).hasSize(3);
+
+    /* Let's make sure we formatted with AOSP using 4 spaces */
+    List<String> lines =
+        IOUtils.readLines(
+            getClass().getResourceAsStream("/simple_aosp/src/main/java/HelloWorld1.java"));
+    assertThat(lines.get(3)).startsWith("    public");
+  }
+
+  @Test
+  public void withAllTypesOfSourcesWithGoogleStyleSpecified() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple_google"), FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getFilesProcessed()).hasSize(3);
+
+    /* Let's make sure we formatted with Google using 2 spaces */
+    List<String> lines =
+        IOUtils.readLines(
+            getClass().getResourceAsStream("/simple_google/src/main/java/HelloWorld1.java"));
+    assertThat(lines.get(3)).startsWith("  public");
+  }
+
+  @Test
   public void failOnUnknownFolderDoesNotFailWhenEverythingIsThere() throws Exception {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonerrorwithsources"), FORMAT);
     fmt.execute();
@@ -58,6 +88,12 @@ public class FMTTest {
   @Test(expected = MojoFailureException.class)
   public void failOnUnknownFolderFailsWhenAFolderIsMissing() throws Exception {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonerrormissingsources"), FORMAT);
+    fmt.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void failOnUnknownStyle() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonunknownstyle"), FORMAT);
     fmt.execute();
   }
 
@@ -120,7 +156,7 @@ public class FMTTest {
     check.execute();
   }
 
-  public File loadPom(String folderName) {
+  private File loadPom(String folderName) {
     return new File("src/test/resources/", folderName);
   }
 }
