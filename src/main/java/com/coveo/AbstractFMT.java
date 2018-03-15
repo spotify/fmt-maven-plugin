@@ -2,15 +2,19 @@ package com.coveo;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSource;
-import com.google.common.io.Files;
 import com.google.googlejavaformat.java.*;
 import com.google.googlejavaformat.java.RemoveUnusedImports.JavadocOnlyImports;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -121,13 +125,17 @@ public abstract class AbstractFMT extends AbstractMojo {
       return;
     }
 
-    List<File> files = Arrays.asList(directory.listFiles(getFileFilter()));
-    for (File file : files) {
-      if (file.isDirectory()) {
-        formatSourceFilesInDirectory(file);
-      } else {
-        formatSourceFile(file);
-      }
+    formatter();
+
+    try (Stream<Path> paths = Files.walk(Paths.get(directory.getPath()))) {
+      paths
+          .parallel()
+          .filter(Files::isRegularFile)
+          .map(Path::toFile)
+          .filter((file) -> getFileFilter().accept(file))
+          .forEach(this::formatSourceFile);
+    } catch (IOException exception) {
+      throw new MojoFailureException(exception.getMessage());
     }
   }
 
@@ -164,7 +172,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     };
   }
 
-  private void formatSourceFile(File file) throws MojoFailureException {
+  private void formatSourceFile(File file) {
     if (file.isDirectory()) {
       logger.info("File '" + file + "' is a directory. Skipping.");
       return;
@@ -174,7 +182,7 @@ public abstract class AbstractFMT extends AbstractMojo {
       logger.debug("Formatting '" + file + "'.");
     }
 
-    CharSource source = Files.asCharSource(file, Charsets.UTF_8);
+    CharSource source = com.google.common.io.Files.asCharSource(file, Charsets.UTF_8);
     try {
       String input = source.read();
       String formatted = formatter().formatSource(input);
@@ -188,9 +196,7 @@ public abstract class AbstractFMT extends AbstractMojo {
       if (filesProcessed.size() % 100 == 0) {
         logNumberOfFilesProcessed();
       }
-    } catch (FormatterException e) {
-      logger.warn("Failed to format file '" + file + "'.", e);
-    } catch (IOException e) {
+    } catch (FormatterException | IOException | MojoFailureException e) {
       logger.warn("Failed to format file '" + file + "'.", e);
     }
   }
