@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -128,7 +129,8 @@ public abstract class AbstractFMT extends AbstractMojo {
 
     try (Stream<Path> paths = Files.walk(Paths.get(directory.getPath()))) {
       paths
-          .parallel()
+          .collect(Collectors.toList())
+          .parallelStream()
           .filter(Files::isRegularFile)
           .map(Path::toFile)
           .filter((file) -> getFileFilter().accept(file))
