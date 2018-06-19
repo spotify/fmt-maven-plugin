@@ -23,7 +23,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AbstractFMT extends AbstractMojo {
-  private Log logger = getLog();
 
   @Parameter(
     defaultValue = "${project.build.sourceDirectory}",
@@ -67,7 +66,7 @@ public abstract class AbstractFMT extends AbstractMojo {
    */
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (skip) {
-      logger.info("Skipping format check");
+      getLog().info("Skipping format check");
       return;
     }
     List<File> directoriesToFormat = new ArrayList<File>();
@@ -123,7 +122,7 @@ public abstract class AbstractFMT extends AbstractMojo {
   public void formatSourceFilesInDirectory(File directory, Formatter formatter)
       throws MojoFailureException {
     if (!directory.isDirectory()) {
-      logger.info("Directory '" + directory + "' is not a directory. Skipping.");
+      getLog().info("Directory '" + directory + "' is not a directory. Skipping.");
       return;
     }
 
@@ -142,15 +141,15 @@ public abstract class AbstractFMT extends AbstractMojo {
 
   private JavaFormatterOptions.Style style() throws MojoFailureException {
     if ("aosp".equalsIgnoreCase(style)) {
-      logger.debug("Using AOSP style");
+      getLog().debug("Using AOSP style");
       return JavaFormatterOptions.Style.AOSP;
     }
     if ("google".equalsIgnoreCase(style)) {
-      logger.debug("Using Google style");
+      getLog().debug("Using Google style");
       return JavaFormatterOptions.Style.GOOGLE;
     }
     String message = "Unknown style '" + style + "'. Expected 'google' or 'aosp'.";
-    logger.error(message);
+    getLog().error(message);
     throw new MojoFailureException(message);
   }
 
@@ -160,7 +159,7 @@ public abstract class AbstractFMT extends AbstractMojo {
 
   private FileFilter getFileFilter() {
     if (verbose) {
-      logger.debug("Filter files on '" + filesNamePattern + "'.");
+      getLog().debug("Filter files on '" + filesNamePattern + "'.");
     }
     return new FileFilter() {
       @Override
@@ -172,12 +171,12 @@ public abstract class AbstractFMT extends AbstractMojo {
 
   private void formatSourceFile(File file, Formatter formatter) {
     if (file.isDirectory()) {
-      logger.info("File '" + file + "' is a directory. Skipping.");
+      getLog().info("File '" + file + "' is a directory. Skipping.");
       return;
     }
 
     if (verbose) {
-      logger.debug("Formatting '" + file + "'.");
+      getLog().debug("Formatting '" + file + "'.");
     }
 
     CharSource source = com.google.common.io.Files.asCharSource(file, Charsets.UTF_8);
@@ -195,7 +194,7 @@ public abstract class AbstractFMT extends AbstractMojo {
         logNumberOfFilesProcessed();
       }
     } catch (FormatterException | IOException e) {
-      logger.warn("Failed to format file '" + file + "'.", e);
+      getLog().warn("Failed to format file '" + file + "'.", e);
     }
   }
 
@@ -207,11 +206,11 @@ public abstract class AbstractFMT extends AbstractMojo {
               + " directory '"
               + directory
               + "' does not exist, failing build (failOnUnknownFolder is true).";
-      logger.error(message);
+      getLog().error(message);
       throw new MojoFailureException(message);
     } else {
-      logger.warn(
-          directoryDisplayName + " directory '" + directory + "' does not exist, ignoring.");
+      getLog()
+          .warn(directoryDisplayName + " directory '" + directory + "' does not exist, ignoring.");
     }
   }
 
