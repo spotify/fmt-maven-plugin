@@ -53,6 +53,9 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = "false", property = "fmt.skip")
   private boolean skip = false;
 
+  @Parameter(defaultValue = "false", property = "skipSortingImports")
+  private boolean skipSortingImports = false;
+
   @Parameter(defaultValue = "google", property = "style")
   private String style;
 
@@ -68,6 +71,9 @@ public abstract class AbstractFMT extends AbstractMojo {
     if (skip) {
       getLog().info("Skipping format check");
       return;
+    }
+    if (skipSortingImports) {
+      getLog().info("Skipping sorting imports");
     }
     List<File> directoriesToFormat = new ArrayList<File>();
     if (sourceDirectory.exists()) {
@@ -184,7 +190,9 @@ public abstract class AbstractFMT extends AbstractMojo {
       String input = source.read();
       String formatted = formatter.formatSource(input);
       formatted = RemoveUnusedImports.removeUnusedImports(formatted, JavadocOnlyImports.KEEP);
-      formatted = ImportOrderer.reorderImports(formatted);
+      if (!skipSortingImports) {
+        formatted = ImportOrderer.reorderImports(formatted);
+      }
       if (!input.equals(formatted)) {
         onNonComplyingFile(file, formatted);
         nonComplyingFiles += 1;

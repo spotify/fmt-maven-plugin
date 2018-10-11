@@ -73,6 +73,8 @@ If you prefer, you can only check formatting at build time using the `check` goa
 
 `skip` is whether the plugin should skip the operation.
 
+`skipSortingImports` is whether the plugin should skip sorting imports.
+
 `style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
 
 example:
@@ -93,6 +95,7 @@ example:
                     <param>some/other/dir</param>
                 </additionalSourceDirectories>
                 <skip>false</skip>
+                <skipSortingImports>false</skipSortingImports>
                 <style>google</style>
             </configuration>
             <executions>
