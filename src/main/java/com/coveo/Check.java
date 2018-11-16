@@ -45,7 +45,7 @@ public class Check extends AbstractFMT {
     if (nonComplyingFiles > 0) {
       String message = "Found " + nonComplyingFiles + " non-complying files, failing build";
       getLog().error(message);
-      getLog().error("To fix formatting errors, run \"mvn fmt:format\"");
+      getLog().error("To fix formatting errors, run \"mvn com.coveo:fmt-maven-plugin:format\"");
       // do not support limit < 1
       displayLimit = max(1, displayLimit);
 
