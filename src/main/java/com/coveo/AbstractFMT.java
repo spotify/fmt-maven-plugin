@@ -38,6 +38,12 @@ public abstract class AbstractFMT extends AbstractMojo {
   )
   private File testSourceDirectory;
 
+  @Parameter(
+    defaultValue = "${project.packaging}",
+    required = true
+  )
+  private String packaging;
+  
   @Parameter(property = "additionalSourceDirectories")
   private File[] additionalSourceDirectories;
 
@@ -70,6 +76,10 @@ public abstract class AbstractFMT extends AbstractMojo {
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (skip) {
       getLog().info("Skipping format check");
+      return;
+    }
+    if ("pom".equals(packaging)) {
+      getLog().info("Skipping format check: project uses 'pom' packaging");
       return;
     }
     if (skipSortingImports) {
