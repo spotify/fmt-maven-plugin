@@ -1,10 +1,9 @@
 package com.coveo;
 
-import static com.google.common.truth.Truth.*;
+import static com.google.common.truth.Truth.assertThat;
 
 import java.io.File;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.MojoRule;
@@ -160,6 +159,12 @@ public class FMTTest {
   public void checkSucceedsWhenNotFormattedButIgnored() throws Exception {
     Check check =
         (Check) mojoRule.lookupConfiguredMojo(loadPom("check_notformatted_ignored"), CHECK);
+    check.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void checkFailsWhenFormattingFails() throws Exception {
+    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("failed_formatting"), CHECK);
     check.execute();
   }
 
