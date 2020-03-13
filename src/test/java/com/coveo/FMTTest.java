@@ -14,6 +14,7 @@ import org.junit.Test;
 public class FMTTest {
   private static String FORMAT = "format";
   private static String CHECK = "check";
+  private static String EARLY_CHECK = "early-check";
 
   @Rule public MojoRule mojoRule = new MojoRule();
 
@@ -160,6 +161,57 @@ public class FMTTest {
   public void checkSucceedsWhenNotFormattedButIgnored() throws Exception {
     Check check =
         (Check) mojoRule.lookupConfiguredMojo(loadPom("check_notformatted_ignored"), CHECK);
+    check.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void validateOnlyFailsWhenNotFormattedEarlyCheck() throws Exception {
+    EarlyCheck check =
+        (EarlyCheck)
+            mojoRule.lookupConfiguredMojo(loadPom("validateonly_notformatted"), EARLY_CHECK);
+    check.execute();
+  }
+
+  @Test
+  public void validateOnlySucceedsWhenFormattedEarlyCheck() throws Exception {
+    EarlyCheck check =
+        (EarlyCheck) mojoRule.lookupConfiguredMojo(loadPom("validateonly_formatted"), EARLY_CHECK);
+    check.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void withUnusedImportsEarlyCheck() throws Exception {
+    EarlyCheck check =
+        (EarlyCheck) mojoRule.lookupConfiguredMojo(loadPom("importunused"), EARLY_CHECK);
+    check.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void withUnsortedImportsEarlyCheck() throws Exception {
+    EarlyCheck check =
+        (EarlyCheck) mojoRule.lookupConfiguredMojo(loadPom("importunsorted"), EARLY_CHECK);
+    check.execute();
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void checkFailsWhenNotFormattedEarlyCheck() throws Exception {
+    EarlyCheck check =
+        (EarlyCheck) mojoRule.lookupConfiguredMojo(loadPom("check_notformatted"), EARLY_CHECK);
+    check.execute();
+  }
+
+  @Test
+  public void checkSucceedsWhenFormattedEarlyCheck() throws Exception {
+    EarlyCheck check =
+        (EarlyCheck) mojoRule.lookupConfiguredMojo(loadPom("check_formatted"), EARLY_CHECK);
+    check.execute();
+  }
+
+  @Test
+  public void checkSucceedsWhenNotFormattedButIgnoredEarlyCheck() throws Exception {
+    EarlyCheck check =
+        (EarlyCheck)
+            mojoRule.lookupConfiguredMojo(loadPom("check_notformatted_ignored"), EARLY_CHECK);
     check.execute();
   }
 

@@ -59,6 +59,27 @@ If you prefer, you can only check formatting at build time using the `check` goa
     </build>
 ```
 
+If you prefer, you can only check formatting at build time during the maven `compile` phase using the `early-check` goal:
+
+```xml
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.coveo</groupId>
+                <artifactId>fmt-maven-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>early-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+```
+
 ### Options
 
 `sourceDirectory` represents the directory where your Java sources that need to be formatted are contained. It defaults to `${project.build.sourceDirectory}`
