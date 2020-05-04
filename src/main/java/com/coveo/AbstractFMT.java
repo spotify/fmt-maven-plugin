@@ -3,7 +3,6 @@ package com.coveo;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSource;
 import com.google.googlejavaformat.java.*;
-import com.google.googlejavaformat.java.RemoveUnusedImports.JavadocOnlyImports;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -105,10 +104,11 @@ public abstract class AbstractFMT extends AbstractMojo {
       }
     }
 
-    Formatter formatter = getFormatter();
+    JavaFormatterOptions.Style style = style();
+    Formatter formatter = getFormatter(style);
 
     for (File directoryToFormat : directoriesToFormat) {
-      formatSourceFilesInDirectory(directoryToFormat, formatter);
+      formatSourceFilesInDirectory(directoryToFormat, formatter, style);
     }
 
     logNumberOfFilesProcessed();
@@ -135,7 +135,8 @@ public abstract class AbstractFMT extends AbstractMojo {
     return filesProcessed;
   }
 
-  public void formatSourceFilesInDirectory(File directory, Formatter formatter)
+  public void formatSourceFilesInDirectory(
+      File directory, Formatter formatter, JavaFormatterOptions.Style style)
       throws MojoFailureException {
     if (!directory.isDirectory()) {
       getLog().info("Directory '" + directory + "' is not a directory. Skipping.");
@@ -152,7 +153,7 @@ public abstract class AbstractFMT extends AbstractMojo {
           .map(Path::toFile)
           .filter(fileNameFilter::accept)
           .filter(pathFilter::accept)
-          .forEach(file -> formatSourceFile(file, formatter));
+          .forEach(file -> formatSourceFile(file, formatter, style));
     } catch (IOException exception) {
       throw new MojoFailureException(exception.getMessage());
     }
@@ -172,8 +173,8 @@ public abstract class AbstractFMT extends AbstractMojo {
     throw new MojoFailureException(message);
   }
 
-  private Formatter getFormatter() throws MojoFailureException {
-    return new Formatter(JavaFormatterOptions.builder().style(style()).build());
+  private Formatter getFormatter(JavaFormatterOptions.Style style) throws MojoFailureException {
+    return new Formatter(JavaFormatterOptions.builder().style(style).build());
   }
 
   private FileFilter getFileNameFilter() {
@@ -190,7 +191,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     return pathname -> pathname.isDirectory() || pathname.getPath().matches(filesPathPattern);
   }
 
-  private void formatSourceFile(File file, Formatter formatter) {
+  private void formatSourceFile(File file, Formatter formatter, JavaFormatterOptions.Style style) {
     if (file.isDirectory()) {
       getLog().info("File '" + file + "' is a directory. Skipping.");
       return;
@@ -204,9 +205,9 @@ public abstract class AbstractFMT extends AbstractMojo {
     try {
       String input = source.read();
       String formatted = formatter.formatSource(input);
-      formatted = RemoveUnusedImports.removeUnusedImports(formatted, JavadocOnlyImports.KEEP);
+      formatted = RemoveUnusedImports.removeUnusedImports(formatted);
       if (!skipSortingImports) {
-        formatted = ImportOrderer.reorderImports(formatted);
+        formatted = ImportOrderer.reorderImports(formatted, style);
       }
       if (!input.equals(formatted)) {
         onNonComplyingFile(file, formatted);
