@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -73,6 +72,7 @@ public abstract class AbstractFMT extends AbstractMojo {
    *
    * @throws org.apache.maven.plugin.MojoExecutionException if any.
    */
+  @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (skip) {
       getLog().info("Skipping format check");
@@ -85,7 +85,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     if (skipSortingImports) {
       getLog().info("Skipping sorting imports");
     }
-    List<File> directoriesToFormat = new ArrayList<File>();
+    List<File> directoriesToFormat = new ArrayList<>();
     if (sourceDirectory.exists()) {
       directoriesToFormat.add(sourceDirectory);
     } else {
@@ -145,14 +145,22 @@ public abstract class AbstractFMT extends AbstractMojo {
     try (Stream<Path> paths = Files.walk(Paths.get(directory.getPath()))) {
       FileFilter fileNameFilter = getFileNameFilter();
       FileFilter pathFilter = getPathFilter();
-      paths
-          .collect(Collectors.toList())
-          .parallelStream()
-          .filter(Files::isRegularFile)
-          .map(Path::toFile)
-          .filter(fileNameFilter::accept)
-          .filter(pathFilter::accept)
-          .forEach(file -> formatSourceFile(file, formatter));
+      long failures =
+          paths
+              .collect(Collectors.toList())
+              .parallelStream()
+              .filter(p -> p.toFile().exists())
+              .map(Path::toFile)
+              .filter(fileNameFilter::accept)
+              .filter(pathFilter::accept)
+              .map(file -> formatSourceFile(file, formatter))
+              .filter(r -> !r)
+              .count();
+
+      if (failures > 0) {
+        throw new MojoFailureException(
+            "There where errors when formatting files. Error count: " + failures);
+      }
     } catch (IOException exception) {
       throw new MojoFailureException(exception.getMessage());
     }
@@ -190,10 +198,10 @@ public abstract class AbstractFMT extends AbstractMojo {
     return pathname -> pathname.isDirectory() || pathname.getPath().matches(filesPathPattern);
   }
 
-  private void formatSourceFile(File file, Formatter formatter) {
+  private boolean formatSourceFile(File file, Formatter formatter) {
     if (file.isDirectory()) {
       getLog().info("File '" + file + "' is a directory. Skipping.");
-      return;
+      return true;
     }
 
     if (verbose) {
@@ -217,8 +225,10 @@ public abstract class AbstractFMT extends AbstractMojo {
         logNumberOfFilesProcessed();
       }
     } catch (FormatterException | IOException e) {
-      getLog().warn("Failed to format file '" + file + "'.", e);
+      getLog().error("Failed to format file '" + file + "'.", e);
+      return false;
     }
+    return true;
   }
 
   private void handleMissingDirectory(String directoryDisplayName, File directory)
