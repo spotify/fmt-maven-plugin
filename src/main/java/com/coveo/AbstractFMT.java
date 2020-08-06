@@ -200,7 +200,9 @@ public abstract class AbstractFMT extends AbstractMojo {
 
   private boolean formatSourceFile(File file, Formatter formatter) {
     if (file.isDirectory()) {
-      getLog().info("File '" + file + "' is a directory. Skipping.");
+      if (verbose) {
+        getLog().debug("File '" + file + "' is a directory. Skipping.");
+      }
       return true;
     }
 
