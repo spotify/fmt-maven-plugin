@@ -17,7 +17,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  * Check mojo that will ensure all files are formatted. If some files are not formatted, an
  * exception is thrown.
  */
-@Mojo(name = "check", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
+@Mojo(name = "check", defaultPhase = LifecyclePhase.COMPILE, threadSafe = true)
 public class Check extends AbstractFMT {
 
   /** Flag to display or not the files that are not compliant. */
