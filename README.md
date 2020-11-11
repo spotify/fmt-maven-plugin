@@ -22,7 +22,7 @@ To have your sources automatically formatted on each build, add to your pom.xml:
             <plugin>
                 <groupId>com.coveo</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
-                <version>2.10</version>
+                <version>2.10.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -43,7 +43,7 @@ If you prefer, you can only check formatting at build time using the `check` goa
             <plugin>
                 <groupId>com.coveo</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
-                <version>2.10</version>
+                <version>2.10.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -81,7 +81,7 @@ example:
         <plugin>
             <groupId>com.coveo</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
-            <version>2.10</version>
+            <version>2.10.1</version>
             <configuration>
                 <sourceDirectory>some/source/directory</sourceDirectory>
                 <testSourceDirectory>some/test/directory</testSourceDirectory>
@@ -124,7 +124,7 @@ example to not display the non-compliant files:
         <plugin>
             <groupId>com.coveo</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
-            <version>2.10</version>
+            <version>2.10.1</version>
             <configuration>
                 <displayFiles>false</displayFiles>
             </configuration>
@@ -147,7 +147,7 @@ example to limit the display up to 10 files
         <plugin>
             <groupId>com.coveo</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
-            <version>2.10</version>
+            <version>2.10.1</version>
             <configuration>
                 <displayLimit>10</displayLimit>
             </configuration>
