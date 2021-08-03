@@ -10,7 +10,7 @@
     <name>${project.groupId}:${project.artifactId}</name>
 
     <description>Maven Plugin that formats a project's Java Code following google-java-format</description>
-    <url>http://github.com/coveo/fmt-maven-plugin</url>
+    <url>http://github.com/coveooss/fmt-maven-plugin</url>
 
     <licenses>
         <license>
@@ -43,9 +43,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:coveo/fmt-maven-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:coveo/fmt-maven-plugin.git</developerConnection>
-        <url>http://github.com/coveo/fmt-maven-plugin</url>
+        <connection>scm:git:git@github.com:coveooss/fmt-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:coveooss/fmt-maven-plugin.git</developerConnection>
+        <url>http://github.com/coveooss/fmt-maven-plugin</url>
     </scm>
 
     <distributionManagement>
