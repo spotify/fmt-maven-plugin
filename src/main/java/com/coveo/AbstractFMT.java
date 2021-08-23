@@ -3,7 +3,6 @@ package com.coveo;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSource;
 import com.google.googlejavaformat.java.*;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -23,17 +22,15 @@ import org.apache.maven.plugins.annotations.Parameter;
 public abstract class AbstractFMT extends AbstractMojo {
 
   @Parameter(
-    defaultValue = "${project.build.sourceDirectory}",
-    property = "sourceDirectory",
-    required = true
-  )
+      defaultValue = "${project.build.sourceDirectory}",
+      property = "sourceDirectory",
+      required = true)
   private File sourceDirectory;
 
   @Parameter(
-    defaultValue = "${project.build.testSourceDirectory}",
-    property = "testSourceDirectory",
-    required = true
-  )
+      defaultValue = "${project.build.testSourceDirectory}",
+      property = "testSourceDirectory",
+      required = true)
   private File testSourceDirectory;
 
   @Parameter(defaultValue = "${project.packaging}", required = true)
@@ -105,10 +102,9 @@ public abstract class AbstractFMT extends AbstractMojo {
     }
 
     JavaFormatterOptions.Style style = style();
-    Formatter formatter = getFormatter(style);
 
     for (File directoryToFormat : directoriesToFormat) {
-      formatSourceFilesInDirectory(directoryToFormat, formatter, style);
+      formatSourceFilesInDirectory(directoryToFormat, style);
     }
 
     logNumberOfFilesProcessed();
@@ -135,8 +131,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     return filesProcessed;
   }
 
-  public void formatSourceFilesInDirectory(
-      File directory, Formatter formatter, JavaFormatterOptions.Style style)
+  public void formatSourceFilesInDirectory(File directory, JavaFormatterOptions.Style style)
       throws MojoFailureException {
     if (!directory.isDirectory()) {
       getLog().info("Directory '" + directory + "' is not a directory. Skipping.");
@@ -147,14 +142,12 @@ public abstract class AbstractFMT extends AbstractMojo {
       FileFilter fileNameFilter = getFileNameFilter();
       FileFilter pathFilter = getPathFilter();
       long failures =
-          paths
-              .collect(Collectors.toList())
-              .parallelStream()
+          paths.collect(Collectors.toList()).stream()
               .filter(p -> p.toFile().exists())
               .map(Path::toFile)
               .filter(fileNameFilter::accept)
               .filter(pathFilter::accept)
-              .map(file -> formatSourceFile(file, formatter, style))
+              .map(file -> formatSourceFile(file, style))
               .filter(r -> !r)
               .count();
 
@@ -181,7 +174,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     throw new MojoFailureException(message);
   }
 
-  private Formatter getFormatter(JavaFormatterOptions.Style style) throws MojoFailureException {
+  private Formatter getFormatter(JavaFormatterOptions.Style style) {
     return new Formatter(JavaFormatterOptions.builder().style(style).build());
   }
 
@@ -199,8 +192,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     return pathname -> pathname.isDirectory() || pathname.getPath().matches(filesPathPattern);
   }
 
-  private boolean formatSourceFile(
-      File file, Formatter formatter, JavaFormatterOptions.Style style) {
+  private boolean formatSourceFile(File file, JavaFormatterOptions.Style style) {
     if (file.isDirectory()) {
       if (verbose) {
         getLog().debug("File '" + file + "' is a directory. Skipping.");
@@ -211,6 +203,13 @@ public abstract class AbstractFMT extends AbstractMojo {
     if (verbose) {
       getLog().debug("Formatting '" + file + "'.");
     }
+
+    return this.formatSourceFileUsingExternalProcess(file, style);
+    // return this.formatSourceFileInProcess(file, style);
+  }
+
+  private boolean formatSourceFileInProcess(File file, JavaFormatterOptions.Style style) {
+    Formatter formatter = getFormatter(style);
 
     CharSource source = com.google.common.io.Files.asCharSource(file, Charsets.UTF_8);
     try {
@@ -232,6 +231,58 @@ public abstract class AbstractFMT extends AbstractMojo {
       getLog().error("Failed to format file '" + file + "'.", e);
       return false;
     }
+    return true;
+  }
+
+  private boolean formatSourceFileUsingExternalProcess(
+      File file, JavaFormatterOptions.Style style) {
+    String os = System.getProperty("os.name");
+    assert os != null;
+
+    String javaHome = System.getProperty("java.home");
+    assert javaHome != null;
+
+    File javaExecutable =
+        new File(new File(javaHome), os.equals("Windows") ? "bin\\java.exe" : "bin/java");
+    assert file.exists();
+
+    String classPath = System.getProperty("java.class.path");
+    assert classPath != null;
+
+    ClassLoader loader = style.getClass().getPackage().;
+
+    try {
+      String command =
+          javaExecutable.getAbsolutePath()
+              + " "
+              + "--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED "
+              + "--add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED "
+              + "--add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED "
+              + "--add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED "
+              + "--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED "
+              + "-cp \""
+              + classPath
+              + "\" "
+              + "com.google.googlejavaformat.java "
+              + "\""
+              + file.getAbsolutePath()
+              + "\"";
+
+      getLog().info("Executing command: " + command);
+
+      Process process = Runtime.getRuntime().exec(command);
+
+      if (process.waitFor()      == 0) {
+        getLog().error("Failed to format file '" + file + "'.");
+        return false;
+      }
+    } catch (IOException ex) {
+      getLog().error("Cannot run the Google Java Formatter CLI", ex);
+      return false;
+    } catch (InterruptedException ex) {
+      return false;
+    }
+
     return true;
   }
 
@@ -260,7 +311,7 @@ public abstract class AbstractFMT extends AbstractMojo {
   }
 
   /**
-   * Hook called when the processd file is not compliant with the formatter.
+   * Hook called when the processed file is not compliant with the formatter.
    *
    * @param file the file that is not compliant
    * @param formatted the corresponding formatted of the file.
