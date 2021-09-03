@@ -12,22 +12,18 @@ jobs:
   build:
     strategy:
       matrix:
-        java: [ '11', '15' ]
+        java: [ '11' ]
         os: [ 'ubuntu-20.04' ]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
         java-version: ${{ matrix.java }}
+        distribution: 'zulu'
+        cache: 'maven'
     - name: print Java version
       run: java -version
-    - uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
     - name: Build
       run: mvn --no-transfer-progress -B clean package
