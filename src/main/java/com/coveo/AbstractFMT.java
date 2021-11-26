@@ -155,7 +155,7 @@ public abstract class AbstractFMT extends AbstractMojo {
 
       if (failures > 0) {
         throw new MojoFailureException(
-            "There where errors when formatting files. Error count: " + failures);
+            "There were errors when formatting files. Error count: " + failures);
       }
     } catch (IOException exception) {
       throw new MojoFailureException(exception.getMessage());
