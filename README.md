@@ -4,6 +4,8 @@
 
 ## fmt-maven-plugin 
 
+UPDATE 2022-02-14: This plugin now lives in the [spotify](https://github.com/spotify/) Github org and the `master` branch has been renamed to `main`.
+
 Formats your code using [google-java-format](https://github.com/google/google-java-format) which follows [Google's code styleguide](https://google.github.io/styleguide/javaguide.html).
 
 The format cannot be configured by design.
