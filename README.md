@@ -196,3 +196,4 @@ git tag v0.0.0
 mvn versions:set -DnewVersion=0.0.0
 mvn clean deploy -P release
 ```
+
