@@ -21,7 +21,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.spotify</groupId>
+                <groupId>com.spotify.fmt</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>1.0.0</version>
                 <executions>

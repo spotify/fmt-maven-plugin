@@ -1,4 +1,4 @@
-package com.spotify;
+package com.spotify.fmt;
 
 import static com.google.common.truth.Truth.assertThat;
 

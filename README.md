@@ -4,7 +4,7 @@
 
 ## fmt-maven-plugin 
 
-**UPDATE 2022-02-14:** This plugin has moved from [coveooss](https://github.com/coveooss/) to the [spotify](https://github.com/spotify/) Github org, the new groupId will be `com.spotify`. The `master` branch has been renamed to `main`.
+**UPDATE 2022-02-14:** This plugin has moved from [coveooss](https://github.com/coveooss/) to the [spotify](https://github.com/spotify/) Github org, the new groupId will be `com.spotify.fmt`. The `master` branch has been renamed to `main`.
 
 Formats your code using [google-java-format](https://github.com/google/google-java-format) which follows [Google's code styleguide](https://google.github.io/styleguide/javaguide.html).
 
@@ -22,7 +22,7 @@ To have your sources automatically formatted on each build, add to your pom.xml:
     <build>
         <plugins>
             <plugin>
-                <groupId>com.spotify</groupId>
+                <groupId>com.spotify.fmt</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>2.13</version>
                 <executions>
@@ -43,7 +43,7 @@ If you prefer, you can only check formatting at build time using the `check` goa
     <build>
         <plugins>
             <plugin>
-                <groupId>com.spotify</groupId>
+                <groupId>com.spotify.fmt</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>2.13</version>
                 <executions>
@@ -81,7 +81,7 @@ example:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.spotify</groupId>
+            <groupId>com.spotify.fmt</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
             <version>2.13</version>
             <configuration>
@@ -124,7 +124,7 @@ example to not display the non-compliant files:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.spotify</groupId>
+            <groupId>com.spotify.fmt</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
             <version>2.13</version>
             <configuration>
@@ -147,7 +147,7 @@ example to limit the display up to 10 files
 <build>
     <plugins>
         <plugin>
-            <groupId>com.spotify</groupId>
+            <groupId>com.spotify.fmt</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
             <version>2.13</version>
             <configuration>
@@ -169,10 +169,10 @@ example to limit the display up to 10 files
 
 You can also use it on the command line
 
-`mvn com.spotify:fmt-maven-plugin:format`
+`mvn com.spotify.fmt:fmt-maven-plugin:format`
 
 You can pass parameters via standard `-D` syntax.
-`mvn com.spotify:fmt-maven-plugin:format -Dverbose=true`
+`mvn com.spotify.fmt:fmt-maven-plugin:format -Dverbose=true`
 
 `-Dfmt.skip` is whether the plugin should skip the operation.
 

@@ -1,4 +1,4 @@
-package com.spotify;
+package com.spotify.fmt;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSink;
