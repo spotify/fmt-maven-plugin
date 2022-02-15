@@ -21,7 +21,7 @@ We follow the [GitHub Flow Workflow](https://guides.github.com/introduction/flow
 ### TODO: Below is an Example
 
 1.  Fork the project 
-1.  Check out the `master` branch 
+1.  Check out the `main` branch 
 1.  Create a feature branch
 1.  Write code and tests for your change 
 1.  From your branch, make a pull request against `https://ghe.spotify.net/sebastianq/find-candidates/master` 
