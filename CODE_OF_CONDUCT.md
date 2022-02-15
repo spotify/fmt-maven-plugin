@@ -60,7 +60,7 @@ After filing a report, a representative will contact you personally, review the 
 
 ### Attribution & Acknowledgements
 
-We all stand on the shoulders of giants across many open source communities.  We'd like to thank the communities and projects that established code of conducts and diversity statements as our inspiration:
+We all stand on the shoulders of giants across many open source communities.  We'd like to thank the communities and projects that established codes of conduct and diversity statements as our inspiration:
 
 * [Django](https://www.djangoproject.com/conduct/reporting/)
 * [Python](https://www.python.org/community/diversity/)
