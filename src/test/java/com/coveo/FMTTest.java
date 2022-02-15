@@ -1,4 +1,4 @@
-package com.coveo;
+package com.spotify;
 
 import static com.google.common.truth.Truth.assertThat;
 

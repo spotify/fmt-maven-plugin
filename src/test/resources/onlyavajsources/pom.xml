@@ -21,7 +21,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.coveo</groupId>
+                <groupId>com.spotify</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>2.12</version>
                 <configuration>

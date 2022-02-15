@@ -1,6 +1,6 @@
-[![Build Status](https://github.com/coveooss/fmt-maven-plugin/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/coveooss/fmt-maven-plugin/actions/workflows/ci.yml?query=branch%3Amaster)
-[![license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/coveooss/fmt-maven-plugin/blob/master/LICENSE)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.coveo/fmt-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.coveo/fmt-maven-plugin)
+[![Build Status](https://github.com/spotify/fmt-maven-plugin/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/spotify/fmt-maven-plugin/actions/workflows/ci.yml?query=branch%3Amaster)
+[![license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/spotify/fmt-maven-plugin/blob/master/LICENSE)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.spotify/fmt-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.spotify/fmt-maven-plugin)
 
 ## fmt-maven-plugin 
 
@@ -22,7 +22,7 @@ To have your sources automatically formatted on each build, add to your pom.xml:
     <build>
         <plugins>
             <plugin>
-                <groupId>com.coveo</groupId>
+                <groupId>com.spotify</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>2.13</version>
                 <executions>
@@ -43,7 +43,7 @@ If you prefer, you can only check formatting at build time using the `check` goa
     <build>
         <plugins>
             <plugin>
-                <groupId>com.coveo</groupId>
+                <groupId>com.spotify</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>2.13</version>
                 <executions>
@@ -81,7 +81,7 @@ example:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.coveo</groupId>
+            <groupId>com.spotify</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
             <version>2.13</version>
             <configuration>
@@ -124,7 +124,7 @@ example to not display the non-compliant files:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.coveo</groupId>
+            <groupId>com.spotify</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
             <version>2.13</version>
             <configuration>
@@ -147,7 +147,7 @@ example to limit the display up to 10 files
 <build>
     <plugins>
         <plugin>
-            <groupId>com.coveo</groupId>
+            <groupId>com.spotify</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
             <version>2.13</version>
             <configuration>
@@ -169,10 +169,10 @@ example to limit the display up to 10 files
 
 You can also use it on the command line
 
-`mvn com.coveo:fmt-maven-plugin:format`
+`mvn com.spotify:fmt-maven-plugin:format`
 
 You can pass parameters via standard `-D` syntax.
-`mvn com.coveo:fmt-maven-plugin:format -Dverbose=true`
+`mvn com.spotify:fmt-maven-plugin:format -Dverbose=true`
 
 `-Dfmt.skip` is whether the plugin should skip the operation.
 

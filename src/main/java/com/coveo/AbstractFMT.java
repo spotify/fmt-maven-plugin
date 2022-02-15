@@ -1,4 +1,4 @@
-package com.coveo;
+package com.spotify;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSource;
