@@ -66,7 +66,7 @@ docs. Please file an [issue](https://github.com/spotify/fmt-maven-plugin/issues/
 # License 
 
 By contributing your code, you agree to license your contribution under the 
-terms of the [LICENSE](https://$LINKTOLICENSEFILE)
+terms of the [LICENSE](LICENSE)
 
 # Code of Conduct
 
