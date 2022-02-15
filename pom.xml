@@ -21,6 +21,11 @@
 
     <developers>
         <developer>
+            <name>Klara Ward</name>
+            <organization>Spotify</organization>
+            <organizationUrl>http://github.com/spotify</organizationUrl>
+        </developer>
+        <developer>
             <name>Pierre-Alexandre St-Jean</name>
             <organization>Coveo</organization>
             <organizationUrl>http://github.com/coveo</organizationUrl>
