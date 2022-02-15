@@ -61,7 +61,7 @@ Branch protection is set up to require one approving review from maintainers of 
 See [README](README.md)
 
 We also welcome improvements to the project documentation or to the existing
-docs. Please file an [issue](https://$REPOURL/issues/New).
+docs. Please file an [issue](https://github.com/spotify/fmt-maven-plugin/issues/New).
 
 # License 
 
