@@ -1,5 +1,5 @@
-[![Build Status](https://github.com/coveooss/fmt-maven-plugin/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/coveooss/fmt-maven-plugin/actions/workflows/ci.yml?query=branch%3Amaster)
-[![license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/coveooss/fmt-maven-plugin/blob/master/LICENSE)
+[![Build Status](https://github.com/coveooss/fmt-maven-plugin/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coveooss/fmt-maven-plugin/actions/workflows/ci.yml?query=branch%3Amain)
+[![license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/coveooss/fmt-maven-plugin/blob/main/LICENSE)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.coveo/fmt-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.coveo/fmt-maven-plugin)
 
 ## fmt-maven-plugin 
