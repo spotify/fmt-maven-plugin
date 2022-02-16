@@ -25,8 +25,24 @@ public class FMTTest {
   }
 
   @Test
+  public void skipSource() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("skipsourcedirectory"), FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getFilesProcessed()).hasSize(1);
+  }
+
+  @Test
   public void withoutTestSources() throws Exception {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("notestsource"), FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getFilesProcessed()).hasSize(2);
+  }
+
+  @Test
+  public void skipTestSources() throws Exception {
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("skiptestsourcedirectory"), FORMAT);
     fmt.execute();
 
     assertThat(fmt.getFilesProcessed()).hasSize(2);
@@ -146,6 +162,20 @@ public class FMTTest {
   @Test(expected = MojoFailureException.class)
   public void checkFailsWhenNotFormatted() throws Exception {
     Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("check_notformatted"), CHECK);
+    check.execute();
+  }
+
+  @Test
+  public void checkSucceedsWhenSkipSourceDirectory() throws Exception {
+    Check check =
+        (Check) mojoRule.lookupConfiguredMojo(loadPom("check_skipsourcedirectory"), CHECK);
+    check.execute();
+  }
+
+  @Test
+  public void checkSucceedsWhenSkipTestSourceDirectory() throws Exception {
+    Check check =
+        (Check) mojoRule.lookupConfiguredMojo(loadPom("check_skiptestsourcedirectory"), CHECK);
     check.execute();
   }
 

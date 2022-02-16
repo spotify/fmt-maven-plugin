@@ -97,6 +97,10 @@ For example, you may prefer that the `check` goal is performed in an earlier pha
 
 `skipSortingImports` is whether the plugin should skip sorting imports.
 
+`skipSourceDirectory` is whether the plugin should skip formatting/checking the `sourceDirectory`. It defaults to `false`.
+
+`skipTestSourceDirectory` is whether the plugin should skip formatting/checking the `testSourceDirectory`. It defaults to `false`.
+
 `style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
 
 example:
@@ -117,6 +121,8 @@ example:
                     <param>some/other/dir</param>
                 </additionalSourceDirectories>
                 <skip>false</skip>
+                <skipSourceDirectory>false</skipSourceDirectory>
+                <skipTestSourceDirectory>false</skipTestSourceDirectory>
                 <skipSortingImports>false</skipSortingImports>
                 <style>google</style>
             </configuration>
