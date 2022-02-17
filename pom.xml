@@ -216,6 +216,7 @@
                 <jdk>[17,)</jdk>
             </activation>
             <properties>
+            <!-- TODO: Remove this once google-java-fmt supports 17 -->
                 <argLine> --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</argLine>
             </properties>
         </profile>
