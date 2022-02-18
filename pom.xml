@@ -5,7 +5,8 @@
     <groupId>com.coveo</groupId>
     <artifactId>fmt-maven-plugin</artifactId>
     <version>2.13</version>
-    <packaging>maven-plugin</packaging>
+    <!-- <packaging>maven-plugin</packaging> -->
+    <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
 
@@ -57,13 +58,17 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
+        <relocation>
+            <groupId>com.spotify.fmt</groupId>
+        </relocation>
     </distributionManagement>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencies>
+    <!-- <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
@@ -111,9 +116,9 @@
             <version>0.28</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+    </dependencies> -->
 
-    <build>
+    <!-- <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -160,14 +165,14 @@
                 </configuration>
             </plugin>
         </plugins>
-    </build>
+    </build> -->
 
     <profiles>
         <profile>
             <id>release</id>
             <build>
                 <plugins>
-                    <plugin>
+                    <!-- <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
                         <version>3.0.0</version>
@@ -181,7 +186,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
+                    </plugin> -->
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
