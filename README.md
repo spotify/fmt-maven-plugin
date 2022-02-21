@@ -58,6 +58,29 @@ If you prefer, you can only check formatting at build time using the `check` goa
     </build>
 ```
 
+#### Overriding the Default Lifecycle Phase
+
+Both goals have a [Maven lifecycle phase](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#lifecycle-reference) configured by default.
+
+| Goal      | Default Phase     |
+|-----------|-------------------|
+| `format`  | `process-sources` |
+| `check`   | `verify`          |
+
+You may prefer to run these goals in a different phase instead.  
+Maven allows you to override the default phase by specifying a `<phase>` for the `<execution>`.
+
+For example, you may prefer that the `check` goal is performed in an earlier phase such as `validate`:
+
+```xml
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+```
+
 ### Options
 
 `sourceDirectory` represents the directory where your Java sources that need to be formatted are contained. It defaults to `${project.build.sourceDirectory}`
