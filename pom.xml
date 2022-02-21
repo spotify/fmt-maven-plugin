@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.coveo</groupId>
+    <groupId>com.spotify.fmt</groupId>
     <artifactId>fmt-maven-plugin</artifactId>
     <version>2.13</version>
     <packaging>maven-plugin</packaging>
@@ -10,7 +10,7 @@
     <name>${project.groupId}:${project.artifactId}</name>
 
     <description>Maven Plugin that formats a project's Java Code following google-java-format</description>
-    <url>http://github.com/coveooss/fmt-maven-plugin</url>
+    <url>http://github.com/spotify/fmt-maven-plugin</url>
 
     <licenses>
         <license>
@@ -20,6 +20,11 @@
     </licenses>
 
     <developers>
+        <developer>
+            <name>Klara Ward</name>
+            <organization>Spotify</organization>
+            <organizationUrl>http://github.com/spotify</organizationUrl>
+        </developer>
         <developer>
             <name>Pierre-Alexandre St-Jean</name>
             <organization>Coveo</organization>
@@ -43,9 +48,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:coveooss/fmt-maven-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:coveooss/fmt-maven-plugin.git</developerConnection>
-        <url>http://github.com/coveooss/fmt-maven-plugin</url>
+        <connection>scm:git:git@github.com:spotify/fmt-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:spotify/fmt-maven-plugin.git</developerConnection>
+        <url>http://github.com/spotify/fmt-maven-plugin</url>
     </scm>
 
     <distributionManagement>
@@ -139,6 +144,7 @@
                 </executions>
             </plugin>
             <plugin>
+                <!-- TODO Update to spotify release -->
                 <groupId>com.coveo</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>2.13</version>

@@ -1,10 +1,10 @@
-[![Build Status](https://github.com/coveooss/fmt-maven-plugin/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coveooss/fmt-maven-plugin/actions/workflows/ci.yml?query=branch%3Amain)
-[![license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/coveooss/fmt-maven-plugin/blob/main/LICENSE)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.coveo/fmt-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.coveo/fmt-maven-plugin)
+[![Build Status](https://github.com/spotify/fmt-maven-plugin/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/spotify/fmt-maven-plugin/actions/workflows/ci.yml?query=branch%3Amain)
+[![license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/spotify/fmt-maven-plugin/blob/main/LICENSE)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.spotify.fmt/fmt-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.spotify.fmt/fmt-maven-plugin)
 
 ## fmt-maven-plugin 
 
-**UPDATE 2022-02-14:** This plugin has moved from [coveoss](https://github.com/coveooss/) to the [spotify](https://github.com/spotify/) Github org, the new groupId will be `com.spotify`. The `master` branch has been renamed to `main`. 
+**UPDATE 2022-02-14:** This plugin has moved from [coveooss](https://github.com/coveooss/) to the [spotify](https://github.com/spotify/) Github org. The new groupId will be `com.spotify.fmt`, and the `master` branch has been renamed to `main`.
 
 Formats your code using [google-java-format](https://github.com/google/google-java-format) which follows [Google's code styleguide](https://google.github.io/styleguide/javaguide.html).
 
@@ -22,7 +22,7 @@ To have your sources automatically formatted on each build, add to your pom.xml:
     <build>
         <plugins>
             <plugin>
-                <groupId>com.coveo</groupId>
+                <groupId>com.spotify.fmt</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>2.13</version>
                 <executions>
@@ -43,7 +43,7 @@ If you prefer, you can only check formatting at build time using the `check` goa
     <build>
         <plugins>
             <plugin>
-                <groupId>com.coveo</groupId>
+                <groupId>com.spotify.fmt</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>2.13</version>
                 <executions>
@@ -104,7 +104,7 @@ example:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.coveo</groupId>
+            <groupId>com.spotify.fmt</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
             <version>2.13</version>
             <configuration>
@@ -147,7 +147,7 @@ example to not display the non-compliant files:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.coveo</groupId>
+            <groupId>com.spotify.fmt</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
             <version>2.13</version>
             <configuration>
@@ -170,7 +170,7 @@ example to limit the display up to 10 files
 <build>
     <plugins>
         <plugin>
-            <groupId>com.coveo</groupId>
+            <groupId>com.spotify.fmt</groupId>
             <artifactId>fmt-maven-plugin</artifactId>
             <version>2.13</version>
             <configuration>
@@ -192,10 +192,10 @@ example to limit the display up to 10 files
 
 You can also use it on the command line
 
-`mvn com.coveo:fmt-maven-plugin:format`
+`mvn com.spotify.fmt:fmt-maven-plugin:format`
 
 You can pass parameters via standard `-D` syntax.
-`mvn com.coveo:fmt-maven-plugin:format -Dverbose=true`
+`mvn com.spotify.fmt:fmt-maven-plugin:format -Dverbose=true`
 
 `-Dfmt.skip` is whether the plugin should skip the operation.
 
