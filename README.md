@@ -213,9 +213,9 @@ Starting from version 1.8, Google Java Formatter requires Java 11 to run. Incide
 
 ### Deploy
 
-```
-git tag v0.0.0
-
-mvn versions:set -DnewVersion=0.0.0
-mvn clean deploy -P release
-```
+- Make a PR to bump the version in the POM with the change from `mvn versions:set -DnewVersion=x.y[.z]`
+- Make a tag - `git tag x.y.z`
+- Do the release - `mvn clean deploy -P release`
+- Create a GitHub release with merged PRs and other information.
+- Wait for the release to be available in [Maven Central](https://search.maven.org/search?q=com.spotify.fmt)
+- Update version in use in the POM, and version in the README.
