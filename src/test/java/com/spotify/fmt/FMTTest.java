@@ -7,14 +7,28 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.MojoRule;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FMTTest {
   private static String FORMAT = "format";
   private static String CHECK = "check";
 
   @Rule public MojoRule mojoRule = new MojoRule();
+
+  @Test
+  public void aaaaFirstTestThatAddsCompilerExports() throws Exception {
+    // Note: After this test has added compiler exports, it will work for the rest of the tests as
+    // well.
+    // However, adding a test before this that doesn't add exports, then all tests will fail?!
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("addcompilerexports"), FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getFilesProcessed()).hasSize(3);
+  }
 
   @Test
   public void noSource() throws Exception {

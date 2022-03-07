@@ -23,16 +23,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AbstractFMT extends AbstractMojo {
 
-  static {
-    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.file");
-    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.main");
-    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.parser");
-    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.tree");
-    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.util");
-    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.code");
-    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.api");
-  }
-
   @Parameter(
       defaultValue = "${project.build.sourceDirectory}",
       property = "sourceDirectory",
@@ -69,6 +59,9 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = "false", property = "skipSortingImports")
   private boolean skipSortingImports = false;
 
+  @Parameter(defaultValue = "false", property = "addCompilerExports")
+  private boolean addCompilerExports = false;
+
   @Parameter(defaultValue = "google", property = "style")
   private String style;
 
@@ -92,6 +85,10 @@ public abstract class AbstractFMT extends AbstractMojo {
     }
     if (skipSortingImports) {
       getLog().info("Skipping sorting imports");
+    }
+    if (addCompilerExports) {
+      getLog().info("Exports javac packages from jdk.compiler module");
+      addCompilerExports();
     }
     List<File> directoriesToFormat = new ArrayList<>();
     if (sourceDirectory.exists()) {
@@ -122,6 +119,16 @@ public abstract class AbstractFMT extends AbstractMojo {
 
     logNumberOfFilesProcessed();
     postExecute(this.filesProcessed, this.nonComplyingFiles);
+  }
+
+  private void addCompilerExports() {
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.file");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.main");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.parser");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.tree");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.util");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.code");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.api");
   }
 
   /**
