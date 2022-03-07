@@ -59,8 +59,8 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = "false", property = "skipSortingImports")
   private boolean skipSortingImports = false;
 
-  @Parameter(defaultValue = "false", property = "addCompilerExports")
-  private boolean addCompilerExports = false;
+  @Parameter(defaultValue = "false", property = "exportCompilerPackages")
+  private boolean exportCompilerPackages = false;
 
   @Parameter(defaultValue = "google", property = "style")
   private String style;
@@ -86,9 +86,9 @@ public abstract class AbstractFMT extends AbstractMojo {
     if (skipSortingImports) {
       getLog().info("Skipping sorting imports");
     }
-    if (addCompilerExports) {
+    if (exportCompilerPackages) {
       getLog().info("Exports javac packages from jdk.compiler module");
-      addCompilerExports();
+      exportCompilerPackages();
     }
     List<File> directoriesToFormat = new ArrayList<>();
     if (sourceDirectory.exists()) {
@@ -121,7 +121,7 @@ public abstract class AbstractFMT extends AbstractMojo {
     postExecute(this.filesProcessed, this.nonComplyingFiles);
   }
 
-  private void addCompilerExports() {
+  private void exportCompilerPackages() {
     Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.file");
     Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.main");
     Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.parser");

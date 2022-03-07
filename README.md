@@ -99,6 +99,9 @@ For example, you may prefer that the `check` goal is performed in an earlier pha
 
 `style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
 
+`exportCompilerPackages` exports the `javac` packages needed from the `jdk.compiler` for the [google-java-format](https://github.com/google/google-java-format#jdk-16) to work with JDK 16+ with using additional JVM arguments to Maven.
+
+
 example:
 ```xml
 <build>
@@ -119,6 +122,7 @@ example:
                 <skip>false</skip>
                 <skipSortingImports>false</skipSortingImports>
                 <style>google</style>
+                <exportCompilerPackages>true</exportCompilerPackages>
             </configuration>
             <executions>
                 <execution>

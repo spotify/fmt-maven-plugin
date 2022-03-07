@@ -24,7 +24,7 @@ public class FMTTest {
     // Note: After this test has added compiler exports, it will work for the rest of the tests as
     // well.
     // However, adding a test before this that doesn't add exports, then all tests will fail?!
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("addcompilerexports"), FORMAT);
+    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("exportcompilerpackages"), FORMAT);
     fmt.execute();
 
     assertThat(fmt.getFilesProcessed()).hasSize(3);
