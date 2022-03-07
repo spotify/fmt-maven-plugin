@@ -1,21 +1,11 @@
 package com.spotify.fmt;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharSource;
-import com.google.googlejavaformat.java.*;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -60,16 +50,11 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = "google", property = "style")
   private String style;
 
-  private List<String> filesProcessed = new CopyOnWriteArrayList<>();
-  private int nonComplyingFiles;
+  private FormattingResult result;
 
-  /**
-   * execute.
-   *
-   * @throws org.apache.maven.plugin.MojoExecutionException if any.
-   */
+  /** execute. */
   @Override
-  public void execute() throws MojoExecutionException, MojoFailureException {
+  public void execute() throws MojoFailureException {
     if (skip) {
       getLog().info("Skipping format check");
       return;
@@ -101,133 +86,47 @@ public abstract class AbstractFMT extends AbstractMojo {
       }
     }
 
-    JavaFormatterOptions.Style style = style();
-    Formatter formatter = getFormatter(style);
+    FormattingConfiguration configuration =
+        FormattingConfiguration.builder()
+            .directoriesToFormat(directoriesToFormat)
+            .style(style)
+            .filesNamePattern(filesNamePattern)
+            .filesPathPattern(filesPathPattern)
+            .verbose(verbose)
+            .skipSortingImports(skipSortingImports)
+            .writeReformattedFiles(shouldWriteReformattedFiles())
+            .processingLabel(getProcessingLabel())
+            .build();
 
-    for (File directoryToFormat : directoriesToFormat) {
-      formatSourceFilesInDirectory(directoryToFormat, formatter, style);
+    final boolean debugLoggingEnabled = getLog().isDebugEnabled();
+    try (ForkingExecutor executor = new ForkingExecutor(getLog())) {
+      executor.javaArgs(javaArgs());
+      try {
+        result =
+            executor.execute(
+                () -> {
+                  Logging.configure(debugLoggingEnabled);
+                  Formatter formatter = new Formatter(configuration);
+                  return formatter.format();
+                });
+      } catch (Exception e) {
+        throw new MojoFailureException(e);
+      }
     }
 
-    logNumberOfFilesProcessed();
-    postExecute(this.filesProcessed, this.nonComplyingFiles);
+    postExecute(result);
   }
 
   /**
    * Post Execute action. It is called at the end of the execute method. Subclasses can add extra
    * checks.
    *
-   * @param filesProcessed the list of processed files by the formatter
-   * @param nonComplyingFiles the number of files that are not compliant
-   * @throws MojoFailureException if there is an exception
+   * @param result The formatting result
    */
-  protected void postExecute(List<String> filesProcessed, int nonComplyingFiles)
-      throws MojoFailureException {}
+  protected void postExecute(FormattingResult result) throws MojoFailureException {}
 
-  /**
-   * Getter for the field <code>filesProcessed</code>.
-   *
-   * @return a {@link java.util.List} object.
-   */
-  public List<String> getFilesProcessed() {
-    return filesProcessed;
-  }
-
-  public void formatSourceFilesInDirectory(
-      File directory, Formatter formatter, JavaFormatterOptions.Style style)
-      throws MojoFailureException {
-    if (!directory.isDirectory()) {
-      getLog().info("Directory '" + directory + "' is not a directory. Skipping.");
-      return;
-    }
-
-    try (Stream<Path> paths = Files.walk(Paths.get(directory.getPath()))) {
-      FileFilter fileNameFilter = getFileNameFilter();
-      FileFilter pathFilter = getPathFilter();
-      long failures =
-          paths.collect(Collectors.toList()).parallelStream()
-              .filter(p -> p.toFile().exists())
-              .map(Path::toFile)
-              .filter(fileNameFilter::accept)
-              .filter(pathFilter::accept)
-              .map(file -> formatSourceFile(file, formatter, style))
-              .filter(r -> !r)
-              .count();
-
-      if (failures > 0) {
-        throw new MojoFailureException(
-            "There were errors when formatting files. Error count: " + failures);
-      }
-    } catch (IOException exception) {
-      throw new MojoFailureException(exception.getMessage());
-    }
-  }
-
-  private JavaFormatterOptions.Style style() throws MojoFailureException {
-    if ("aosp".equalsIgnoreCase(style)) {
-      getLog().debug("Using AOSP style");
-      return JavaFormatterOptions.Style.AOSP;
-    }
-    if ("google".equalsIgnoreCase(style)) {
-      getLog().debug("Using Google style");
-      return JavaFormatterOptions.Style.GOOGLE;
-    }
-    String message = "Unknown style '" + style + "'. Expected 'google' or 'aosp'.";
-    getLog().error(message);
-    throw new MojoFailureException(message);
-  }
-
-  private Formatter getFormatter(JavaFormatterOptions.Style style) throws MojoFailureException {
-    return new Formatter(JavaFormatterOptions.builder().style(style).build());
-  }
-
-  private FileFilter getFileNameFilter() {
-    if (verbose) {
-      getLog().debug("Filter files on '" + filesNamePattern + "'.");
-    }
-    return pathname -> pathname.isDirectory() || pathname.getName().matches(filesNamePattern);
-  }
-
-  private FileFilter getPathFilter() {
-    if (verbose) {
-      getLog().debug("Filter paths on '" + filesPathPattern + "'.");
-    }
-    return pathname -> pathname.isDirectory() || pathname.getPath().matches(filesPathPattern);
-  }
-
-  private boolean formatSourceFile(
-      File file, Formatter formatter, JavaFormatterOptions.Style style) {
-    if (file.isDirectory()) {
-      if (verbose) {
-        getLog().debug("File '" + file + "' is a directory. Skipping.");
-      }
-      return true;
-    }
-
-    if (verbose) {
-      getLog().debug("Formatting '" + file + "'.");
-    }
-
-    CharSource source = com.google.common.io.Files.asCharSource(file, Charsets.UTF_8);
-    try {
-      String input = source.read();
-      String formatted = formatter.formatSource(input);
-      formatted = RemoveUnusedImports.removeUnusedImports(formatted);
-      if (!skipSortingImports) {
-        formatted = ImportOrderer.reorderImports(formatted, style);
-      }
-      if (!input.equals(formatted)) {
-        onNonComplyingFile(file, formatted);
-        nonComplyingFiles += 1;
-      }
-      filesProcessed.add(file.getAbsolutePath());
-      if (filesProcessed.size() % 100 == 0) {
-        logNumberOfFilesProcessed();
-      }
-    } catch (FormatterException | IOException e) {
-      getLog().error("Failed to format file '" + file + "'.", e);
-      return false;
-    }
-    return true;
+  public FormattingResult getResult() {
+    return result;
   }
 
   private void handleMissingDirectory(String directoryDisplayName, File directory)
@@ -246,22 +145,8 @@ public abstract class AbstractFMT extends AbstractMojo {
     }
   }
 
-  protected void logNumberOfFilesProcessed() {
-    getLog()
-        .info(
-            String.format(
-                "Processed %d files (%d %s).",
-                filesProcessed.size(), nonComplyingFiles, getProcessingLabel()));
-  }
-
-  /**
-   * Hook called when the processd file is not compliant with the formatter.
-   *
-   * @param file the file that is not compliant
-   * @param formatted the corresponding formatted of the file.
-   * @throws IOException on any
-   */
-  protected abstract void onNonComplyingFile(File file, String formatted) throws IOException;
+  /** Whether to write reformatted files to disk. */
+  protected abstract boolean shouldWriteReformattedFiles();
 
   /**
    * Provides the name of the label used when a non-formatted file is found.
@@ -269,4 +154,26 @@ public abstract class AbstractFMT extends AbstractMojo {
    * @return the label to use in the log
    */
   protected abstract String getProcessingLabel();
+
+  private boolean hasModuleSystem() {
+    try {
+      Class.forName("java.lang.Module");
+      return true;
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
+  }
+
+  private List<String> javaArgs() {
+    if (!hasModuleSystem()) {
+      return Collections.emptyList();
+    }
+
+    return Arrays.asList(
+        "--add-exports", "jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+        "--add-exports", "jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
+        "--add-exports", "jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
+        "--add-exports", "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
+        "--add-exports", "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED");
+  }
 }

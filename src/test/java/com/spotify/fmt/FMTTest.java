@@ -21,7 +21,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("nosource"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).isEmpty();
+    assertThat(fmt.getResult().processedFiles()).isEmpty();
   }
 
   @Test
@@ -29,7 +29,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("notestsource"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(2);
+    assertThat(fmt.getResult().processedFiles()).hasSize(2);
   }
 
   @Test
@@ -37,7 +37,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("onlytestsources"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(1);
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
   }
 
   @Test
@@ -45,7 +45,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(3);
+    assertThat(fmt.getResult().processedFiles()).hasSize(3);
   }
 
   @Test
@@ -53,7 +53,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple_aosp"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(3);
+    assertThat(fmt.getResult().processedFiles()).hasSize(3);
 
     /* Let's make sure we formatted with AOSP using 4 spaces */
     List<String> lines =
@@ -67,7 +67,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple_google"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(3);
+    assertThat(fmt.getResult().processedFiles()).hasSize(3);
 
     /* Let's make sure we formatted with Google using 2 spaces */
     List<String> lines =
@@ -81,7 +81,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonerrorwithsources"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).isNotEmpty();
+    assertThat(fmt.getResult().processedFiles()).isNotEmpty();
   }
 
   @Test(expected = MojoFailureException.class)
@@ -101,7 +101,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("additionalfolders"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(8);
+    assertThat(fmt.getResult().processedFiles()).hasSize(8);
   }
 
   @Test
@@ -109,7 +109,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("onlyavajsources"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(1);
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
   }
 
   @Test(expected = MojoFailureException.class)

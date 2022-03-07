@@ -1,13 +1,8 @@
 package com.spotify.fmt;
 
 import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static java.lang.String.format;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -28,22 +23,18 @@ public class Check extends AbstractFMT {
   @Parameter(defaultValue = "100", property = "displayLimit")
   private int displayLimit;
 
-  /** List of unformatted files. */
-  private List<String> filesNotFormatted = new ArrayList<String>();
-
   /**
    * Post Execute action. It is called at the end of the execute method. Subclasses can add extra
    * checks.
    *
-   * @param filesProcessed the list of processed files by the formatter
-   * @param nonComplyingFiles the number of files that are not compliant
+   * @param result The formatting result
    * @throws MojoFailureException if there is an exception
    */
   @Override
-  protected void postExecute(List<String> filesProcessed, int nonComplyingFiles)
-      throws MojoFailureException {
-    if (nonComplyingFiles > 0) {
-      String message = "Found " + nonComplyingFiles + " non-complying files, failing build";
+  protected void postExecute(FormattingResult result) throws MojoFailureException {
+    if (!result.nonComplyingFiles().isEmpty()) {
+      String message =
+          "Found " + result.nonComplyingFiles().stream() + " non-complying files, failing build";
       getLog().error(message);
       getLog()
           .error("To fix formatting errors, run \"mvn com.spotify.fmt:fmt-maven-plugin:format\"");
@@ -52,28 +43,24 @@ public class Check extends AbstractFMT {
 
       // Display first displayLimit files not formatted
       if (displayFiles) {
-        for (String path :
-            filesNotFormatted.subList(0, min(displayLimit, filesNotFormatted.size()))) {
-          getLog().error("Non complying file: " + path);
-        }
+        result.nonComplyingFiles().stream()
+            .limit(displayLimit)
+            .forEach(path -> getLog().error("Non complying file: " + path));
 
-        if (nonComplyingFiles > displayLimit) {
-          getLog().error(format("... and %d more files.", nonComplyingFiles - displayLimit));
+        if (result.nonComplyingFiles().size() > displayLimit) {
+          getLog()
+              .error(
+                  format(
+                      "... and %d more files.", result.nonComplyingFiles().size() - displayLimit));
         }
       }
       throw new MojoFailureException(message);
     }
   }
 
-  /**
-   * Hook called when the processd file is not compliant with the formatter.
-   *
-   * @param file the file that is not compliant
-   * @param formatted the corresponding formatted of the file.
-   */
   @Override
-  protected void onNonComplyingFile(final File file, final String formatted) throws IOException {
-    filesNotFormatted.add(file.getAbsolutePath());
+  protected boolean shouldWriteReformattedFiles() {
+    return false;
   }
 
   /**
