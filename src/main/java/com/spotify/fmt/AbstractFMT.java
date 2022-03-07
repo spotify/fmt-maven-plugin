@@ -1,5 +1,7 @@
 package com.spotify.fmt;
 
+import static org.burningwave.core.assembler.StaticComponentContainer.Modules;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSource;
 import com.google.googlejavaformat.java.*;
@@ -20,6 +22,16 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AbstractFMT extends AbstractMojo {
+
+  static {
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.file");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.main");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.parser");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.tree");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.util");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.code");
+    Modules.exportPackageToAllUnnamed("jdk.compiler", "com.sun.tools.javac.api");
+  }
 
   @Parameter(
       defaultValue = "${project.build.sourceDirectory}",
