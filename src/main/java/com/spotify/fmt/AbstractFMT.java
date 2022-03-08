@@ -150,10 +150,10 @@ public abstract class AbstractFMT extends AbstractMojo {
 
   private boolean shouldFork() {
     switch (forkMode) {
-      case "never":
-        return false;
       case "default":
         return hasModuleSystem();
+      case "never":
+        return false;
       case "always":
         return true;
       default:
