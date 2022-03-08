@@ -58,7 +58,7 @@ public abstract class AbstractFMT extends AbstractMojo {
   private Map<String, Artifact> pluginArtifactMap;
 
   /**
-   * Option to specify whether to run google-java-format in a fork or in-process. Can be {@code default}, {@code never} and {@code always.
+   * Option to specify whether to run google-java-format in a fork or in-process. Can be {@code default}, {@code never} and {@code always}.
    * The {@code default} (which is the default) will fork when JDK 16+ is detected.
    * The {@code never} will never fork and instead run in-process, regardless of JDK version.
    * The {@code always} will always fork, regardless of JDK version.<br>
