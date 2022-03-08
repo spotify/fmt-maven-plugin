@@ -1,5 +1,6 @@
 package com.spotify.fmt;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,8 +57,20 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(property = "plugin.artifactMap", required = true, readonly = true)
   private Map<String, Artifact> pluginArtifactMap;
 
-  @Parameter(defaultValue = "false", property = "forkWithDefaultClasspath")
-  boolean forkWithDefaultClasspath;
+  /**
+   * Option to specify whether to run google-java-format in a fork or in-process. Can be {@code default}, {@code never} and {@code always.
+   * The {@code default} (which is the default) will fork when JDK 16+ is detected.
+   * The {@code never} will never fork and instead run in-process, regardless of JDK version.
+   * The {@code always} will always fork, regardless of JDK version.<br>
+   */
+  @Parameter(defaultValue = "default", property = "fmt.forkMode")
+  String forkMode;
+
+  /**
+   * Whether to use the classpath from the java.class.path property when forking. Only intended for
+   * use by unit tests.
+   */
+  @VisibleForTesting boolean useDefaultClasspathWhenForking;
 
   private FormattingResult result;
 
@@ -97,6 +110,7 @@ public abstract class AbstractFMT extends AbstractMojo {
 
     FormattingConfiguration configuration =
         FormattingConfiguration.builder()
+            .debug(getLog().isDebugEnabled())
             .directoriesToFormat(directoriesToFormat)
             .style(style)
             .filesNamePattern(filesNamePattern)
@@ -107,31 +121,45 @@ public abstract class AbstractFMT extends AbstractMojo {
             .processingLabel(getProcessingLabel())
             .build();
 
-    final boolean debugLoggingEnabled = getLog().isDebugEnabled();
-    final List<String> classpath =
-        pluginArtifactMap.values().stream()
-            .map(a -> a.getFile().getAbsolutePath())
-            .collect(Collectors.toList());
+    FormattingCallable formattingCallable = new FormattingCallable(configuration);
 
-    try (ForkingExecutor executor =
-        new ForkingExecutor(getLog())
-            .javaArgs(javaArgs())
-            .classpath(classpath)
-            .withDefaultClasspath(forkWithDefaultClasspath)) {
-      try {
-        result =
-            executor.execute(
-                () -> {
-                  Logging.configure(debugLoggingEnabled);
-                  Formatter formatter = new Formatter(configuration);
-                  return formatter.format();
-                });
-      } catch (Exception e) {
-        throw new MojoFailureException(e);
+    try {
+      if (shouldFork()) {
+        final List<String> classpath =
+            pluginArtifactMap.values().stream()
+                .map(a -> a.getFile().getAbsolutePath())
+                .collect(Collectors.toList());
+
+        try (ForkingExecutor executor =
+            new ForkingExecutor(getLog())
+                .javaArgs(javaArgs())
+                .classpath(classpath)
+                .withDefaultClasspath(useDefaultClasspathWhenForking)) {
+          result = executor.execute(formattingCallable);
+        }
+
+      } else {
+        result = formattingCallable.call();
       }
+    } catch (Exception e) {
+      throw new MojoFailureException(e);
     }
 
     postExecute(result);
+  }
+
+  private boolean shouldFork() {
+    switch (forkMode) {
+      case "never":
+        return false;
+      case "default":
+        return hasModuleSystem();
+      case "always":
+        return true;
+      default:
+        throw new IllegalArgumentException(
+            "Invalid forkMode: " + forkMode + ", must be `default`, `never` or `always`");
+    }
   }
 
   /**
@@ -172,6 +200,7 @@ public abstract class AbstractFMT extends AbstractMojo {
    */
   protected abstract String getProcessingLabel();
 
+  /** Is this JDK 16+? */
   private boolean hasModuleSystem() {
     try {
       Class.forName("java.lang.Module");
@@ -192,5 +221,21 @@ public abstract class AbstractFMT extends AbstractMojo {
         "--add-exports", "jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
         "--add-exports", "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
         "--add-exports", "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED");
+  }
+
+  private static class FormattingCallable implements SerializableCallable<FormattingResult> {
+
+    private final FormattingConfiguration configuration;
+
+    FormattingCallable(FormattingConfiguration configuration) {
+      this.configuration = configuration;
+    }
+
+    @Override
+    public FormattingResult call() {
+      Logging.configure(configuration.debug());
+      Formatter formatter = new Formatter(configuration);
+      return formatter.format();
+    }
   }
 }

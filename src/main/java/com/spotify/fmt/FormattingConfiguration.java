@@ -8,6 +8,8 @@ import java.util.List;
 @AutoMatter
 interface FormattingConfiguration extends Serializable {
 
+  boolean debug();
+
   String style();
 
   List<File> directoriesToFormat();

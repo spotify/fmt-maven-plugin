@@ -172,7 +172,7 @@ public class FMTTest {
     File pomFile = loadPom(pomFilePath);
     T fmt = (T) mojoRule.lookupConfiguredMojo(pomFile, goal);
     // Required for forking to work in unit tests where ${plugin.artifactMap} is not populated.
-    fmt.forkWithDefaultClasspath = true;
+    fmt.useDefaultClasspathWhenForking = true;
     return fmt;
   }
 
