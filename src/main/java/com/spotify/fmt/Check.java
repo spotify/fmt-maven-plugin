@@ -34,7 +34,7 @@ public class Check extends AbstractFMT {
   protected void postExecute(FormattingResult result) throws MojoFailureException {
     if (!result.nonComplyingFiles().isEmpty()) {
       String message =
-          "Found " + result.nonComplyingFiles().stream() + " non-complying files, failing build";
+          "Found " + result.nonComplyingFiles().size() + " non-complying files, failing build";
       getLog().error(message);
       getLog()
           .error("To fix formatting errors, run \"mvn com.spotify.fmt:fmt-maven-plugin:format\"");
