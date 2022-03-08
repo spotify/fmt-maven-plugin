@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -49,6 +52,12 @@ public abstract class AbstractFMT extends AbstractMojo {
 
   @Parameter(defaultValue = "google", property = "style")
   private String style;
+
+  @Parameter(property = "plugin.artifactMap", required = true, readonly = true)
+  private Map<String, Artifact> pluginArtifactMap;
+
+  @Parameter(defaultValue = "false", property = "forkWithDefaultClasspath")
+  boolean forkWithDefaultClasspath;
 
   private FormattingResult result;
 
@@ -99,8 +108,16 @@ public abstract class AbstractFMT extends AbstractMojo {
             .build();
 
     final boolean debugLoggingEnabled = getLog().isDebugEnabled();
-    try (ForkingExecutor executor = new ForkingExecutor(getLog())) {
-      executor.javaArgs(javaArgs());
+    final List<String> classpath =
+        pluginArtifactMap.values().stream()
+            .map(a -> a.getFile().getAbsolutePath())
+            .collect(Collectors.toList());
+
+    try (ForkingExecutor executor =
+        new ForkingExecutor(getLog())
+            .javaArgs(javaArgs())
+            .classpath(classpath)
+            .withDefaultClasspath(forkWithDefaultClasspath)) {
       try {
         result =
             executor.execute(

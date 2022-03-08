@@ -19,6 +19,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.maven.plugin.logging.Log;
 
 /**
@@ -46,6 +48,8 @@ class ForkingExecutor implements Closeable {
 
   private Map<String, String> environment = Collections.emptyMap();
   private List<String> javaArgs = Collections.emptyList();
+  private boolean withDefaultClasspath = true;
+  private List<String> configuredClasspath = Collections.emptyList();
 
   public ForkingExecutor(Log log) {
     this.log = log;
@@ -65,6 +69,27 @@ class ForkingExecutor implements Closeable {
     return this;
   }
 
+  ForkingExecutor classpath(Collection<String> classpath) {
+    this.configuredClasspath = new ArrayList<>(classpath);
+    return this;
+  }
+
+  ForkingExecutor withDefaultClasspath(boolean withDefaultClasspath) {
+    this.withDefaultClasspath = withDefaultClasspath;
+    return this;
+  }
+
+  private List<String> defaultClasspath() {
+    return Arrays.asList(System.getProperty("java.class.path").split(File.pathSeparator));
+  }
+
+  private List<String> excutionClassPath() {
+    return withDefaultClasspath
+        ? Stream.concat(configuredClasspath.stream(), defaultClasspath().stream())
+            .collect(Collectors.toList())
+        : configuredClasspath;
+  }
+
   /**
    * Execute a function in a sub-process.
    *
@@ -74,7 +99,7 @@ class ForkingExecutor implements Closeable {
    * @throws IOException if
    */
   <T> T execute(SerializableCallable<T> f) throws IOException {
-    try (final Execution<T> execution = new Execution<>(f)) {
+    try (final Execution<T> execution = new Execution<>(excutionClassPath(), f)) {
       executions.add(execution);
       execution.start();
       return execution.waitFor();
@@ -99,14 +124,16 @@ class ForkingExecutor implements Closeable {
     private final Path errorFile = tempdir.resolve("error");
 
     private final String home = System.getProperty("java.home");
-    private final String classPath = System.getProperty("java.class.path");
     private final Path java = Paths.get(home, "bin", "java").toAbsolutePath().normalize();
+
+    private final List<String> classpath;
 
     private final SerializableCallable<T> f;
 
     private Process process;
 
-    Execution(SerializableCallable<T> f) throws IOException {
+    Execution(List<String> classpath, SerializableCallable<T> f) throws IOException {
+      this.classpath = classpath;
       this.f = Objects.requireNonNull(f);
     }
 
@@ -121,13 +148,10 @@ class ForkingExecutor implements Closeable {
         throw new RuntimeException("Failed to serialize closure", e);
       }
 
-      final String absoluteClassPath =
-          Arrays.stream(classPath.split(File.pathSeparator))
-              .map(cp -> Paths.get(cp).toAbsolutePath().toString())
-              .collect(Collectors.joining(File.pathSeparator));
+      final String classPathArg = String.join(File.pathSeparator, classpath);
 
       final ProcessBuilder processBuilder =
-          new ProcessBuilder(java.toString(), "-cp", absoluteClassPath).directory(workdir.toFile());
+          new ProcessBuilder(java.toString(), "-cp", classPathArg).directory(workdir.toFile());
 
       // Propagate -Xmx and -D.
       ManagementFactory.getRuntimeMXBean().getInputArguments().stream()
