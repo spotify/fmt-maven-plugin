@@ -122,6 +122,32 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <properties>
+                        <testVersion>${project.version}</testVersion>
+                        <!-- e.g. ensure that Java7 picks up TLSv1.2 when connecting with Central -->
+                        <https.protocols>${https.protocols}</https.protocols>
+                    </properties>
+                    <showVersion>true</showVersion>
+                    <goals>verify</goals>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>install</goal>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <projectsDirectory>src/test/resources</projectsDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>3.6.0</version>
                 <configuration>
