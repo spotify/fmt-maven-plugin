@@ -54,9 +54,6 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = "google", property = "style")
   private String style;
 
-  @Parameter(property = "plugin.artifactMap", required = true, readonly = true)
-  private Map<String, Artifact> pluginArtifactMap;
-
   /**
    * Option to specify whether to run google-java-format in a fork or in-process. Can be {@code
    * default}, {@code never} and {@code always}.
@@ -67,6 +64,9 @@ public abstract class AbstractFMT extends AbstractMojo {
    */
   @Parameter(defaultValue = "default", property = "fmt.forkMode")
   String forkMode;
+
+  @Parameter(property = "plugin.artifactMap", required = true, readonly = true)
+  private Map<String, Artifact> pluginArtifactMap;
 
   /**
    * Whether to use the classpath from the java.class.path property when forking. Only intended for
