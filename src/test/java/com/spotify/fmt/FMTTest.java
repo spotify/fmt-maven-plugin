@@ -125,7 +125,7 @@ public class FMTTest {
 
   @Test
   public void forkNeverBeforeJDK16() throws Exception {
-    assumeFalse(AbstractFMT.stronglyEncapsulatedByDefault()); // Skip if forking is needed.
+    assumeFalse(AbstractFMT.javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is needed.
     FMT fmt = loadMojo("fork_never_beforejdk16", FORMAT);
     fmt.execute();
 
@@ -134,7 +134,7 @@ public class FMTTest {
 
   @Test(expected = IllegalAccessError.class) // Could stop throwing this if google-java-format is fixed.
   public void forkNeverAfterJDK16() throws Exception {
-    assumeTrue(AbstractFMT.stronglyEncapsulatedByDefault()); // Skip if forking is not needed.
+    assumeTrue(AbstractFMT.javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is not needed.
     FMT fmt = loadMojo("fork_never_afterjdk16", FORMAT);
     fmt.execute();
 

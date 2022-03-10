@@ -153,7 +153,7 @@ public abstract class AbstractFMT extends AbstractMojo {
   private boolean shouldFork() {
     switch (forkMode) {
       case "default":
-        return stronglyEncapsulatedByDefault();
+        return javaRuntimeStronglyEncapsulatesByDefault();
       case "never":
         return false;
       case "always":
@@ -203,12 +203,12 @@ public abstract class AbstractFMT extends AbstractMojo {
   protected abstract String getProcessingLabel();
 
   @VisibleForTesting
-  static boolean stronglyEncapsulatedByDefault() {
+  static boolean javaRuntimeStronglyEncapsulatesByDefault() {
     return Runtime.version().compareTo(Runtime.Version.parse("16")) >= 0;
   }
 
   private List<String> javaArgs() {
-    if (!stronglyEncapsulatedByDefault()) {
+    if (!javaRuntimeStronglyEncapsulatesByDefault()) {
       return Collections.emptyList();
     }
 
