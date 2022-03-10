@@ -30,4 +30,4 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
     - name: Build
-      run: mvn --no-transfer-progress -B clean package
+      run: mvn --no-transfer-progress -B clean verify
