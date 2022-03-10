@@ -97,7 +97,9 @@ For example, you may prefer that the `check` goal is performed in an earlier pha
 
 `skipSortingImports` is whether the plugin should skip sorting imports.
 
-`style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
+`style` sets the formatter style to be `google` or `aosp`. By default this is `google`. Projects using Android conventions may prefer `aosp`.
+
+`forkMode` lets you specify whether to run google-java-format in a fork or in-process. Also adds JVM arguments when needed. Value `default` will fork when JDK 16+ is detected, `never` runs in-process, regardless of JDK version and `always` will always fork.
 
 example:
 ```xml
