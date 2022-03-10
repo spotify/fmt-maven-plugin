@@ -56,7 +56,7 @@ public abstract class AbstractFMT extends AbstractMojo {
 
   /**
    * Option to specify whether to run google-java-format in a fork or in-process. Can be {@code
-   * default}, {@code never} and {@code always}.
+   * default}, {@code never} and {@code always}. Also adds JVM arguments when needed.
    *
    * <p>Specifying {@code default} (which is the default) will fork when JDK 16+ is detected.
    * Specifying {@code never} will never fork and instead run in-process, regardless of JDK version.
@@ -217,7 +217,7 @@ public abstract class AbstractFMT extends AbstractMojo {
       return Collections.emptyList();
     }
 
-    // https://github.com/google/google-java-format/blob/13ca73ebbfa86f6aca5f86be16e6829de6d5014c/pom.xml#L238
+    // https://github.com/google/google-java-format/blame/13ca73ebbfa86f6aca5f86be16e6829de6d5014c/pom.xml#L238
     return Arrays.asList(
         "--add-exports", "jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
         "--add-exports", "jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
