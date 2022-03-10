@@ -1,6 +1,9 @@
 package com.spotify.fmt;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.util.List;
@@ -107,6 +110,40 @@ public class FMTTest {
   @Test
   public void withOnlyAvajFiles() throws Exception {
     FMT fmt = loadMojo("onlyavajsources", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test
+  public void forkAlways() throws Exception {
+    FMT fmt = loadMojo("fork_always", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test
+  public void forkNeverBeforeJDK16() throws Exception {
+    assumeFalse(AbstractFMT.stronglyEncapsulatedByDefault()); // Skip if forking is needed.
+    FMT fmt = loadMojo("fork_never_beforejdk16", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test(expected = IllegalAccessError.class) // Could stop throwing this if google-java-format is fixed.
+  public void forkNeverAfterJDK16() throws Exception {
+    assumeTrue(AbstractFMT.stronglyEncapsulatedByDefault()); // Skip if forking is not needed.
+    FMT fmt = loadMojo("fork_never_afterjdk16", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void unsupportedForkMode() throws Exception {
+    FMT fmt = loadMojo("unsupported_fork_mode", FORMAT);
     fmt.execute();
 
     assertThat(fmt.getResult().processedFiles()).hasSize(1);
