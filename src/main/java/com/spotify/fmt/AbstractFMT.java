@@ -153,7 +153,7 @@ public abstract class AbstractFMT extends AbstractMojo {
   private boolean shouldFork() {
     switch (forkMode) {
       case "default":
-        return hasModuleSystem();
+        return stronglyEncapsulatedByDefault();
       case "never":
         return false;
       case "always":
@@ -202,18 +202,13 @@ public abstract class AbstractFMT extends AbstractMojo {
    */
   protected abstract String getProcessingLabel();
 
-  /** Is this JDK 16+? */
-  private boolean hasModuleSystem() {
-    try {
-      Class.forName("java.lang.Module");
-      return true;
-    } catch (ClassNotFoundException e) {
-      return false;
-    }
+  @VisibleForTesting
+  static boolean stronglyEncapsulatedByDefault() {
+    return Runtime.version().compareTo(Runtime.Version.parse("16")) >= 0;
   }
 
   private List<String> javaArgs() {
-    if (!hasModuleSystem()) {
+    if (!stronglyEncapsulatedByDefault()) {
       return Collections.emptyList();
     }
 
