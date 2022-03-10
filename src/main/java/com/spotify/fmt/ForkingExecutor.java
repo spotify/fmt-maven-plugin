@@ -83,7 +83,7 @@ class ForkingExecutor implements Closeable {
     return Arrays.asList(System.getProperty("java.class.path").split(File.pathSeparator));
   }
 
-  private List<String> excutionClassPath() {
+  private List<String> executionClassPath() {
     return withDefaultClasspath
         ? Stream.concat(configuredClasspath.stream(), defaultClasspath().stream())
             .collect(Collectors.toList())
@@ -99,7 +99,7 @@ class ForkingExecutor implements Closeable {
    * @throws IOException if
    */
   <T> T execute(SerializableCallable<T> f) throws IOException {
-    try (final Execution<T> execution = new Execution<>(excutionClassPath(), f)) {
+    try (final Execution<T> execution = new Execution<>(executionClassPath(), f)) {
       executions.add(execution);
       execution.start();
       return execution.waitFor();
