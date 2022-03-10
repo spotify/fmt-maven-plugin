@@ -63,7 +63,7 @@ public abstract class AbstractFMT extends AbstractMojo {
    * Specifying {@code always} will always fork, regardless of JDK version.<br>
    */
   @Parameter(defaultValue = "default", property = "fmt.forkMode")
-  String forkMode;
+  private String forkMode;
 
   @Parameter(property = "plugin.artifactMap", required = true, readonly = true)
   private Map<String, Artifact> pluginArtifactMap;
