@@ -72,24 +72,6 @@ public class ForkingExecutorTest {
     assertThat(result).isEqualTo("bar");
   }
 
-  @Test
-  public void propagatesJavaArgs() throws IOException {
-    final String result =
-        forkingExecutor
-            .javaArgs("-Dfoo=bar")
-            .execute(
-                () -> {
-                  // Fork again with an executor without -Dfoo=bar explicitly configured
-                  try (ForkingExecutor inner = new ForkingExecutor(new SilentLog())) {
-                    // And check that -Dfoo=bar was automatically propagated
-                    return inner.execute(() -> System.getProperty("foo"));
-                  } catch (IOException e) {
-                    throw new RuntimeException(e);
-                  }
-                });
-    assertThat(result).isEqualTo("bar");
-  }
-
   private static class FoobarException extends RuntimeException {
 
     FoobarException(String message) {

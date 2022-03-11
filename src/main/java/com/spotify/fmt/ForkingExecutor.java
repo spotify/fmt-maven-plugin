@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.lang.management.ManagementFactory;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -152,11 +151,6 @@ class ForkingExecutor implements Closeable {
 
       final ProcessBuilder processBuilder =
           new ProcessBuilder(java.toString(), "-cp", classPathArg).directory(workdir.toFile());
-
-      // Propagate -Xmx and -D.
-      ManagementFactory.getRuntimeMXBean().getInputArguments().stream()
-          .filter(s -> s.startsWith("-Xmx") || s.startsWith("-D"))
-          .forEach(processBuilder.command()::add);
 
       // Custom jvm args
       javaArgs.forEach(processBuilder.command()::add);
