@@ -97,7 +97,9 @@ For example, you may prefer that the `check` goal is performed in an earlier pha
 
 `skipSortingImports` is whether the plugin should skip sorting imports.
 
-`style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
+`style` sets the formatter style to be `google` or `aosp`. By default this is `google`. Projects using Android conventions may prefer `aosp`.
+
+`forkMode` lets you specify whether to run google-java-format in a fork or in-process. Also adds JVM arguments when needed. Value `default` will fork when JDK 16+ is detected, `never` runs in-process, regardless of JDK version and `always` will always fork.
 
 example:
 ```xml
@@ -198,14 +200,6 @@ You can pass parameters via standard `-D` syntax.
 `mvn com.spotify.fmt:fmt-maven-plugin:format -Dverbose=true`
 
 `-Dfmt.skip` is whether the plugin should skip the operation.
-
-### Using with Java 16+ and Maven
-
-Since the JDK is more restrictive since version 16 you need to pass some [parameters](https://github.com/google/google-java-format#jdk-16) to the JVM to run the Google Java Formatter. To do so add the file  `.mvn/jvm.config` under your project's root directory with the following contents:
-
-```
---add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED 
-```
 
 ### Using with Java 8
 

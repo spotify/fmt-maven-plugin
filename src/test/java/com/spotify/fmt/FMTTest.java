@@ -1,6 +1,9 @@
 package com.spotify.fmt;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.util.List;
@@ -18,42 +21,42 @@ public class FMTTest {
 
   @Test
   public void noSource() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("nosource"), FORMAT);
+    FMT fmt = loadMojo("nosource", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).isEmpty();
+    assertThat(fmt.getResult().processedFiles()).isEmpty();
   }
 
   @Test
   public void withoutTestSources() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("notestsource"), FORMAT);
+    FMT fmt = loadMojo("notestsource", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(2);
+    assertThat(fmt.getResult().processedFiles()).hasSize(2);
   }
 
   @Test
   public void withOnlyTestSources() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("onlytestsources"), FORMAT);
+    FMT fmt = loadMojo("onlytestsources", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(1);
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
   }
 
   @Test
   public void withAllTypesOfSources() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple"), FORMAT);
+    FMT fmt = loadMojo("simple", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(3);
+    assertThat(fmt.getResult().processedFiles()).hasSize(3);
   }
 
   @Test
   public void withAllTypesOfSourcesWithAospStyleSpecified() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple_aosp"), FORMAT);
+    FMT fmt = loadMojo("simple_aosp", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(3);
+    assertThat(fmt.getResult().processedFiles()).hasSize(3);
 
     /* Let's make sure we formatted with AOSP using 4 spaces */
     List<String> lines =
@@ -64,10 +67,10 @@ public class FMTTest {
 
   @Test
   public void withAllTypesOfSourcesWithGoogleStyleSpecified() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("simple_google"), FORMAT);
+    FMT fmt = loadMojo("simple_google", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(3);
+    assertThat(fmt.getResult().processedFiles()).hasSize(3);
 
     /* Let's make sure we formatted with Google using 2 spaces */
     List<String> lines =
@@ -78,94 +81,135 @@ public class FMTTest {
 
   @Test
   public void failOnUnknownFolderDoesNotFailWhenEverythingIsThere() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonerrorwithsources"), FORMAT);
+    FMT fmt = loadMojo("failonerrorwithsources", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).isNotEmpty();
+    assertThat(fmt.getResult().processedFiles()).isNotEmpty();
   }
 
   @Test(expected = MojoFailureException.class)
   public void failOnUnknownFolderFailsWhenAFolderIsMissing() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonerrormissingsources"), FORMAT);
+    FMT fmt = loadMojo("failonerrormissingsources", FORMAT);
     fmt.execute();
   }
 
   @Test(expected = MojoFailureException.class)
   public void failOnUnknownStyle() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("failonunknownstyle"), FORMAT);
+    FMT fmt = loadMojo("failonunknownstyle", FORMAT);
     fmt.execute();
   }
 
   @Test
   public void canAddAdditionalFolders() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("additionalfolders"), FORMAT);
+    FMT fmt = loadMojo("additionalfolders", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(8);
+    assertThat(fmt.getResult().processedFiles()).hasSize(8);
   }
 
   @Test
   public void withOnlyAvajFiles() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("onlyavajsources"), FORMAT);
+    FMT fmt = loadMojo("onlyavajsources", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(1);
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test
+  public void forkAlways() throws Exception {
+    FMT fmt = loadMojo("fork_always", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test
+  public void forkNeverBeforeJDK16() throws Exception {
+    assumeFalse(AbstractFMT.javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is needed.
+    FMT fmt = loadMojo("fork_never_beforejdk16", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test(expected = IllegalAccessError.class) // Could stop throwing this if google-java-format is fixed.
+  public void forkNeverAfterJDK16() throws Exception {
+    assumeTrue(AbstractFMT.javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is not needed.
+    FMT fmt = loadMojo("fork_never_afterjdk16", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void unsupportedForkMode() throws Exception {
+    FMT fmt = loadMojo("unsupported_fork_mode", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
   }
 
   @Test(expected = MojoFailureException.class)
   public void validateOnlyFailsWhenNotFormatted() throws Exception {
-    Check check =
-        (Check) mojoRule.lookupConfiguredMojo(loadPom("validateonly_notformatted"), CHECK);
+    Check check = loadMojo("validateonly_notformatted", CHECK);
     check.execute();
   }
 
   @Test
   public void validateOnlySucceedsWhenFormatted() throws Exception {
-    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("validateonly_formatted"), CHECK);
+    Check check = loadMojo("validateonly_formatted", CHECK);
     check.execute();
   }
 
   @Test(expected = MojoFailureException.class)
   public void withUnusedImports() throws Exception {
-    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("importunused"), CHECK);
+    Check check = loadMojo("importunused", CHECK);
     check.execute();
   }
 
   @Test(expected = MojoFailureException.class)
   public void withUnsortedImports() throws Exception {
-    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("importunsorted"), CHECK);
+    Check check = loadMojo("importunsorted", CHECK);
     check.execute();
   }
 
   @Test
   public void withCleanImports() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("importclean"), FORMAT);
+    FMT fmt = loadMojo("importclean", FORMAT);
     fmt.execute();
   }
 
   @Test(expected = MojoFailureException.class)
   public void checkFailsWhenNotFormatted() throws Exception {
-    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("check_notformatted"), CHECK);
+    Check check = loadMojo("check_notformatted", CHECK);
     check.execute();
   }
 
   @Test
   public void checkSucceedsWhenFormatted() throws Exception {
-    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("check_formatted"), CHECK);
+    Check check = loadMojo("check_formatted", CHECK);
     check.execute();
   }
 
   @Test
   public void checkSucceedsWhenNotFormattedButIgnored() throws Exception {
-    Check check =
-        (Check) mojoRule.lookupConfiguredMojo(loadPom("check_notformatted_ignored"), CHECK);
+    Check check = loadMojo("check_notformatted_ignored", CHECK);
     check.execute();
   }
 
   @Test(expected = MojoFailureException.class)
   public void checkFailsWhenFormattingFails() throws Exception {
-    Check check = (Check) mojoRule.lookupConfiguredMojo(loadPom("failed_formatting"), CHECK);
+    Check check = loadMojo("failed_formatting", CHECK);
     check.execute();
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T extends AbstractFMT> T loadMojo(String pomFilePath, String goal) throws Exception {
+    File pomFile = loadPom(pomFilePath);
+    T fmt = (T) mojoRule.lookupConfiguredMojo(pomFile, goal);
+    // Required for forking to work in unit tests where ${plugin.artifactMap} is not populated.
+    fmt.useDefaultClasspathWhenForking = true;
+    return fmt;
   }
 
   private File loadPom(String folderName) {
