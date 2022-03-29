@@ -2,7 +2,6 @@ package com.spotify.fmt;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeThat;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
@@ -116,8 +115,15 @@ public class FMTTest {
   }
 
   @Test
+  public void forkByDefaultAfterJDK9() throws Exception {
+    FMT fmt = loadMojo("simple", FORMAT);
+    assertThat(fmt.shouldFork()).isTrue();
+  }
+
+  @Test
   public void forkAlways() throws Exception {
     FMT fmt = loadMojo("fork_always", FORMAT);
+    assertThat(fmt.shouldFork()).isTrue();
     fmt.execute();
 
     assertThat(fmt.getResult().processedFiles()).hasSize(1);
@@ -125,17 +131,21 @@ public class FMTTest {
 
   @Test
   public void forkNeverBeforeJDK16() throws Exception {
-    assumeFalse(AbstractFMT.javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is needed.
+    assumeFalse(javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is needed.
     FMT fmt = loadMojo("fork_never_beforejdk16", FORMAT);
+    assertThat(fmt.shouldFork()).isFalse();
     fmt.execute();
 
     assertThat(fmt.getResult().processedFiles()).hasSize(1);
   }
 
-  @Test(expected = IllegalAccessError.class) // Could stop throwing this if google-java-format is fixed.
+  @Test(
+      expected =
+          IllegalAccessError.class) // Could stop throwing this if google-java-format is fixed.
   public void forkNeverAfterJDK16() throws Exception {
-    assumeTrue(AbstractFMT.javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is not needed.
+    assumeTrue(javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is not needed.
     FMT fmt = loadMojo("fork_never_afterjdk16", FORMAT);
+    assertThat(fmt.shouldFork()).isFalse();
     fmt.execute();
 
     assertThat(fmt.getResult().processedFiles()).hasSize(1);
@@ -214,5 +224,9 @@ public class FMTTest {
 
   private File loadPom(String folderName) {
     return new File("src/test/resources/", folderName);
+  }
+
+  private static boolean javaRuntimeStronglyEncapsulatesByDefault() {
+    return Runtime.version().compareTo(Runtime.Version.parse("16")) >= 0;
   }
 }

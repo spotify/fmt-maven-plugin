@@ -4,7 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -150,14 +149,14 @@ public abstract class AbstractFMT extends AbstractMojo {
     postExecute(result);
   }
 
-  private boolean shouldFork() {
+  @VisibleForTesting
+  boolean shouldFork() {
     switch (forkMode) {
       case "default":
-        return javaRuntimeStronglyEncapsulatesByDefault();
-      case "never":
-        return false;
       case "always":
         return true;
+      case "never":
+        return false;
       default:
         throw new IllegalArgumentException(
             "Invalid forkMode: " + forkMode + ", must be `default`, `never` or `always`");
@@ -202,16 +201,7 @@ public abstract class AbstractFMT extends AbstractMojo {
    */
   protected abstract String getProcessingLabel();
 
-  @VisibleForTesting
-  static boolean javaRuntimeStronglyEncapsulatesByDefault() {
-    return Runtime.version().compareTo(Runtime.Version.parse("16")) >= 0;
-  }
-
   private List<String> javaArgs() {
-    if (!javaRuntimeStronglyEncapsulatesByDefault()) {
-      return Collections.emptyList();
-    }
-
     // https://github.com/google/google-java-format/blame/13ca73ebbfa86f6aca5f86be16e6829de6d5014c/pom.xml#L238
     return Arrays.asList(
         "--add-exports", "jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
