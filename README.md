@@ -211,5 +211,6 @@ Starting from version 1.8, Google Java Formatter requires Java 11 to run. Incide
 - `mvn release:perform -P release` (make sure to use Maven settings which include credentials for the Sonatype staging repo. It's ok to run this command with `-DskipTests`)
 - `git fetch` - to make sure your local repo is uptodate with the commits from the releas plugin.
 - Create a GitHub release with merged PRs and other information.
+- Check that the release is available in [Sonatype staging](https://oss.sonatype.org/#nexus-search;quick~com.spotify.fmt)
 - Wait for the release to be available in [Maven Central](https://search.maven.org/search?q=com.spotify.fmt)
 - Update version in use in the POM, and version in the README.
