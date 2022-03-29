@@ -207,6 +207,7 @@ Starting from version 1.8, Google Java Formatter requires Java 11 to run. Incide
 
 ### Deploy
 
+- `git checkout main && git pull`
 - `mvn release:prepare` - use x.y format for release version and x.y.z for SCM tag. (You can only do this as admin of the repo)
 - `mvn release:perform -P release` (make sure to use Maven settings which include credentials for the Sonatype staging repo. It's ok to run this command with `-DskipTests`)
 - `git fetch` - to make sure your local repo is uptodate with the commits from the releas plugin.
