@@ -25,7 +25,7 @@ public class Check extends AbstractFMT {
   private int displayLimit;
 
   /** Only show warnings instead of failing */
-  @Parameter(defaultValue = "false", property = "warningOnly")
+  @Parameter(defaultValue = "false", property = "fmt.warningOnly")
   private boolean warningOnly;
 
   /**
