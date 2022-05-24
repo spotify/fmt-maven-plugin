@@ -219,8 +219,8 @@ public class FMTTest {
   }
 
   @Test
-  public void checkWarnsWhenNotFormattedAndConfiguredWithWarningOnlyTrue() throws Exception {
-    Check check = loadMojo("warningonly_notformatted", CHECK);
+  public void checkWarnsWhenNotFormattedAndConfiguredWithFailOnWarningFalse() throws Exception {
+    Check check = loadMojo("failonwarningfalse_notformatted", CHECK);
     Log logSpy = setupLogSpy(check);
 
     check.execute();
@@ -229,8 +229,8 @@ public class FMTTest {
   }
 
   @Test
-  public void checkDoesNotWarnWhenFormattedAndConfiguredWithWarningOnlyTrue() throws Exception {
-    Check check = loadMojo("warningonly_formatted", CHECK);
+  public void checkDoesNotWarnWhenFormattedAndConfiguredWithFailOnWarningFalse() throws Exception {
+    Check check = loadMojo("failonwarningfalse_formatted", CHECK);
     Log logSpy = setupLogSpy(check);
 
     check.execute();
@@ -241,7 +241,7 @@ public class FMTTest {
   @Test(expected = MojoFailureException.class)
   public void checkFailsAndLogsErrorWhenFormattingFailsAndConfiguredWithWarningOnlyFalse()
       throws Exception {
-    Check check = loadMojo("warningonlyfalse_notformatted", CHECK);
+    Check check = loadMojo("failonwarningtrue_notformatted", CHECK);
     Log logSpy = setupLogSpy(check);
 
     check.execute();

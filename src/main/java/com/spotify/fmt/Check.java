@@ -24,9 +24,9 @@ public class Check extends AbstractFMT {
   @Parameter(defaultValue = "100", property = "displayLimit")
   private int displayLimit;
 
-  /** Only show warnings instead of failing */
-  @Parameter(defaultValue = "false", property = "fmt.warningOnly")
-  private boolean warningOnly;
+  /** Fail build for non-compliant formatting */
+  @Parameter(defaultValue = "true", property = "fmt.failOnWarning")
+  private boolean failOnWarning;
 
   /**
    * Post Execute action. It is called at the end of the execute method. Subclasses can add extra
@@ -37,13 +37,13 @@ public class Check extends AbstractFMT {
    */
   @Override
   protected void postExecute(FormattingResult result) throws MojoFailureException {
-    Consumer<String> messageConsumer = warningOnly ? getLog()::warn : getLog()::error;
+    Consumer<String> messageConsumer = failOnWarning ? getLog()::error : getLog()::warn;
     if (!result.nonComplyingFiles().isEmpty()) {
       String message =
           "Found "
               + result.nonComplyingFiles().size()
               + " non-complying files"
-              + (warningOnly ? "" : ", failing build");
+              + (failOnWarning ? ", failing build" : "");
       messageConsumer.accept(message);
       messageConsumer.accept(
           "To fix formatting errors, run \"mvn com.spotify.fmt:fmt-maven-plugin:format\"");
@@ -62,7 +62,7 @@ public class Check extends AbstractFMT {
         }
       }
 
-      if (!warningOnly) {
+      if (failOnWarning) {
         throw new MojoFailureException(message);
       }
     }
