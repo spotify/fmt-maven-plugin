@@ -202,6 +202,7 @@ public class FMTTest {
   @Test
   public void checkSucceedsWhenFormatted() throws Exception {
     Check check = loadMojo("check_formatted", CHECK);
+
     check.execute();
   }
 
@@ -224,7 +225,7 @@ public class FMTTest {
 
     check.execute();
 
-    Mockito.verify(logSpy).warn(Mockito.matches(".*non-complying files.*"));
+    Mockito.verify(logSpy).warn(Mockito.contains("Non complying file"));
   }
 
   @Test
@@ -234,7 +235,7 @@ public class FMTTest {
 
     check.execute();
 
-    Mockito.verify(logSpy).warn(not(Mockito.matches(".*non-complying files.*")));
+    Mockito.verify(logSpy).warn(not(Mockito.contains("Non complying file")));
   }
 
   @Test(expected = MojoFailureException.class)
@@ -245,7 +246,7 @@ public class FMTTest {
 
     check.execute();
 
-    Mockito.verify(logSpy).error(Mockito.matches(".*non-complying files.*"));
+    Mockito.verify(logSpy).error(Mockito.contains("Non complying file"));
   }
 
   @SuppressWarnings("unchecked")
