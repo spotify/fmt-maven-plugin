@@ -3,6 +3,7 @@ package com.spotify.fmt;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 
+import java.util.function.Consumer;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -23,6 +24,10 @@ public class Check extends AbstractFMT {
   @Parameter(defaultValue = "100", property = "displayLimit")
   private int displayLimit;
 
+  /** Only show warnings instead of failing */
+  @Parameter(defaultValue = "false", property = "warningOnly")
+  private boolean warningOnly;
+
   /**
    * Post Execute action. It is called at the end of the execute method. Subclasses can add extra
    * checks.
@@ -32,12 +37,16 @@ public class Check extends AbstractFMT {
    */
   @Override
   protected void postExecute(FormattingResult result) throws MojoFailureException {
+    Consumer<String> messageConsumer = warningOnly ? getLog()::warn : getLog()::error;
     if (!result.nonComplyingFiles().isEmpty()) {
       String message =
-          "Found " + result.nonComplyingFiles().size() + " non-complying files, failing build";
-      getLog().error(message);
-      getLog()
-          .error("To fix formatting errors, run \"mvn com.spotify.fmt:fmt-maven-plugin:format\"");
+          "Found "
+              + result.nonComplyingFiles().size()
+              + " non-complying files"
+              + (warningOnly ? "" : ", failing build");
+      messageConsumer.accept(message);
+      messageConsumer.accept(
+          "To fix formatting errors, run \"mvn com.spotify.fmt:fmt-maven-plugin:format\"");
       // do not support limit < 1
       displayLimit = max(1, displayLimit);
 
@@ -45,16 +54,17 @@ public class Check extends AbstractFMT {
       if (displayFiles) {
         result.nonComplyingFiles().stream()
             .limit(displayLimit)
-            .forEach(path -> getLog().error("Non complying file: " + path));
+            .forEach(path -> messageConsumer.accept("Non complying file: " + path));
 
         if (result.nonComplyingFiles().size() > displayLimit) {
-          getLog()
-              .error(
-                  format(
-                      "... and %d more files.", result.nonComplyingFiles().size() - displayLimit));
+          messageConsumer.accept(
+              format("... and %d more files.", result.nonComplyingFiles().size() - displayLimit));
         }
       }
-      throw new MojoFailureException(message);
+
+      if (!warningOnly) {
+        throw new MojoFailureException(message);
+      }
     }
   }
 

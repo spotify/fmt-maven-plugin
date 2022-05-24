@@ -3,14 +3,18 @@ package com.spotify.fmt;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
+import static org.mockito.AdditionalMatchers.not;
 
 import java.io.File;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
+import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class FMTTest {
   private static String FORMAT = "format";
@@ -213,6 +217,37 @@ public class FMTTest {
     check.execute();
   }
 
+  @Test
+  public void checkWarnsWhenNotFormattedAndConfiguredWithWarningOnlyTrue() throws Exception {
+    Check check = loadMojo("warningonly_notformatted", CHECK);
+    Log logSpy = setupLogSpy(check);
+
+    check.execute();
+
+    Mockito.verify(logSpy).warn(Mockito.matches(".*non-complying files.*"));
+  }
+
+  @Test
+  public void checkDoesNotWarnWhenFormattedAndConfiguredWithWarningOnlyTrue() throws Exception {
+    Check check = loadMojo("warningonly_formatted", CHECK);
+    Log logSpy = setupLogSpy(check);
+
+    check.execute();
+
+    Mockito.verify(logSpy).warn(not(Mockito.matches(".*non-complying files.*")));
+  }
+
+  @Test(expected = MojoFailureException.class)
+  public void checkFailsAndLogsErrorWhenFormattingFailsAndConfiguredWithWarningOnlyFalse()
+      throws Exception {
+    Check check = loadMojo("warningonlyfalse_notformatted", CHECK);
+    Log logSpy = setupLogSpy(check);
+
+    check.execute();
+
+    Mockito.verify(logSpy).error(Mockito.matches(".*non-complying files.*"));
+  }
+
   @SuppressWarnings("unchecked")
   private <T extends AbstractFMT> T loadMojo(String pomFilePath, String goal) throws Exception {
     File pomFile = loadPom(pomFilePath);
@@ -224,6 +259,12 @@ public class FMTTest {
 
   private File loadPom(String folderName) {
     return new File("src/test/resources/", folderName);
+  }
+
+  private Log setupLogSpy(Mojo mojo) {
+    Log spy = Mockito.spy(mojo.getLog());
+    mojo.setLog(spy);
+    return spy;
   }
 
   private static boolean javaRuntimeStronglyEncapsulatesByDefault() {
