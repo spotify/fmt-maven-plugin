@@ -25,7 +25,7 @@
                 <artifactId>fmt-maven-plugin</artifactId>
                 <version>2.12</version>
                 <configuration>
-                    <failOnWarning>true</failOnWarning>
+                    <failOnError>false</failOnError>
                 </configuration>
                 <executions>
                     <execution>

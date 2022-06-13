@@ -142,7 +142,7 @@ example:
 
 `displayLimit` default = 100. Number of files to display that are not compliant.
 
-`failOnWarning` default = true. Fail the build if non-compliant files are found.
+`failOnError` default = true. Fail the build if non-compliant files are found.
 
 
 example to not display the non-compliant files:
@@ -200,7 +200,7 @@ example to only warn about non-compliant files instead of failing the build
             <artifactId>fmt-maven-plugin</artifactId>
             <version>VERSION</version>
             <configuration>
-                <failOnWarning>false</failOnWarning>
+                <failOnError>false</failOnError>
             </configuration>
             <executions>
                 <execution>
