@@ -138,11 +138,12 @@ example:
 
 ### check Options
 
-`displayFiles` default = true. Display the list of the files that are not compliant
+`displayFiles` default = true. Display the list of the files that are not compliant.
 
-`displayLimit` default = 100. Number of files to display that are not compliant`
+`displayLimit` default = 100. Number of files to display that are not compliant.
 
-`style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
+`failOnError` default = true. Fail the build if non-compliant files are found.
+
 
 example to not display the non-compliant files:
 ```xml
@@ -177,6 +178,29 @@ example to limit the display up to 10 files
             <version>VERSION</version>
             <configuration>
                 <displayLimit>10</displayLimit>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
+example to only warn about non-compliant files instead of failing the build
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>com.spotify.fmt</groupId>
+            <artifactId>fmt-maven-plugin</artifactId>
+            <version>VERSION</version>
+            <configuration>
+                <failOnError>false</failOnError>
             </configuration>
             <executions>
                 <execution>
