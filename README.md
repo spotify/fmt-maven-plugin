@@ -101,7 +101,9 @@ For example, you may prefer that the `check` goal is performed in an earlier pha
 
 `skipTestSourceDirectory` is whether the plugin should skip formatting/checking the `testSourceDirectory`. It defaults to `false`.
 
-`style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
+`style` sets the formatter style to be `google` or `aosp`. By default this is `google`. Projects using Android conventions may prefer `aosp`.
+
+`forkMode` lets you specify whether to run google-java-format in a fork or in-process. Also adds JVM arguments to expose JDK internal javac APIs. Value `default` (which is the default) will fork (to avoid warnings for JDK9+ and to be able to run at all for JDK16+), `never` runs in-process, regardless of JDK version and `always` will always fork.
 
 example:
 ```xml
@@ -142,11 +144,12 @@ example:
 
 ### check Options
 
-`displayFiles` default = true. Display the list of the files that are not compliant
+`displayFiles` default = true. Display the list of the files that are not compliant.
 
-`displayLimit` default = 100. Number of files to display that are not compliant`
+`displayLimit` default = 100. Number of files to display that are not compliant.
 
-`style` sets the formatter style to be _google_ or _aosp_. By default this is 'google'. Projects using Android conventions may prefer `aosp`.
+`failOnError` default = true. Fail the build if non-compliant files are found.
+
 
 example to not display the non-compliant files:
 ```xml
@@ -194,6 +197,29 @@ example to limit the display up to 10 files
 </build>
 ```
 
+example to only warn about non-compliant files instead of failing the build
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>com.spotify.fmt</groupId>
+            <artifactId>fmt-maven-plugin</artifactId>
+            <version>VERSION</version>
+            <configuration>
+                <failOnError>false</failOnError>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
 ### Command line
 
 You can also use it on the command line
@@ -205,23 +231,17 @@ You can pass parameters via standard `-D` syntax.
 
 `-Dfmt.skip` is whether the plugin should skip the operation.
 
-### Using with Java 16+ and Maven
-
-Since the JDK is more restrictive since version 16 you need to pass some [parameters](https://github.com/google/google-java-format#jdk-16) to the JVM to run the Google Java Formatter. To do so add the file  `.mvn/jvm.config` under your project's root directory with the following contents:
-
-```
---add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED 
-```
-
 ### Using with Java 8
 
 Starting from version 1.8, Google Java Formatter requires Java 11 to run. Incidently, all versions of this plugin starting from 2.10 inclusively also require this Java version to properly function. The 2.9.x release branch is the most up-to-date version that still runs on Java 8.
 
 ### Deploy
 
-- Make a PR to bump the version in the POM with the change from `mvn versions:set -DnewVersion=x.y[.z]`
-- Make a tag - `git tag x.y.z`
-- Do the release - `mvn clean deploy -P release`
+- `git checkout main && git pull`
+- `mvn release:prepare` - use x.y format for release version and x.y.z for SCM tag. (You can only do this as admin of the repo)
+- `mvn release:perform -P release` (make sure to use Maven settings which include credentials for the Sonatype staging repo)
+- `git fetch` - to make sure your local repo is up to date with the commits from the release plugin.
 - Create a GitHub release with merged PRs and other information.
-- Wait for the release to be available in [Maven Central](https://search.maven.org/search?q=com.spotify.fmt)
-- Update version in use in the POM, and version in the README.
+- Check that the release is available in [Sonatype staging](https://oss.sonatype.org/#nexus-search;quick~com.spotify.fmt)
+- Wait for the release to be available in [Maven Central](https://repo1.maven.org/maven2/com/spotify/fmt/fmt-maven-plugin/)
+- Update version used for actual formatting in the POM.
