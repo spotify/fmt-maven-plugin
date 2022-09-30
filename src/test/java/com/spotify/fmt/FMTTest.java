@@ -32,7 +32,7 @@ public class FMTTest {
 
   @Test
   public void skipSource() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("skipsourcedirectory"), FORMAT);
+    FMT fmt = loadMojo("skipsourcedirectory", FORMAT);
     fmt.execute();
 
     assertThat(fmt.getResult().processedFiles()).hasSize(1);
@@ -48,7 +48,7 @@ public class FMTTest {
 
   @Test
   public void skipTestSources() throws Exception {
-    FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("skiptestsourcedirectory"), FORMAT);
+    FMT fmt = loadMojo("skiptestsourcedirectory", FORMAT);
     fmt.execute();
 
     assertThat(fmt.getResult().processedFiles()).hasSize(2);
@@ -217,15 +217,13 @@ public class FMTTest {
 
   @Test
   public void checkSucceedsWhenSkipSourceDirectory() throws Exception {
-    Check check =
-        (Check) mojoRule.lookupConfiguredMojo(loadPom("check_skipsourcedirectory"), CHECK);
+    Check check = loadMojo("check_skipsourcedirectory", CHECK);
     check.execute();
   }
 
   @Test
   public void checkSucceedsWhenSkipTestSourceDirectory() throws Exception {
-    Check check =
-        (Check) mojoRule.lookupConfiguredMojo(loadPom("check_skiptestsourcedirectory"), CHECK);
+    Check check = loadMojo("check_skiptestsourcedirectory", CHECK);
     check.execute();
   }
 
