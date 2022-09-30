@@ -97,6 +97,10 @@ For example, you may prefer that the `check` goal is performed in an earlier pha
 
 `skipSortingImports` is whether the plugin should skip sorting imports.
 
+`skipSourceDirectory` is whether the plugin should skip formatting/checking the `sourceDirectory`. It defaults to `false`.
+
+`skipTestSourceDirectory` is whether the plugin should skip formatting/checking the `testSourceDirectory`. It defaults to `false`.
+
 `style` sets the formatter style to be `google` or `aosp`. By default this is `google`. Projects using Android conventions may prefer `aosp`.
 
 `forkMode` lets you specify whether to run google-java-format in a fork or in-process. Also adds JVM arguments to expose JDK internal javac APIs. Value `default` (which is the default) will fork (to avoid warnings for JDK9+ and to be able to run at all for JDK16+), `never` runs in-process, regardless of JDK version and `always` will always fork.
@@ -119,6 +123,8 @@ example:
                     <param>some/other/dir</param>
                 </additionalSourceDirectories>
                 <skip>false</skip>
+                <skipSourceDirectory>false</skipSourceDirectory>
+                <skipTestSourceDirectory>false</skipTestSourceDirectory>
                 <skipSortingImports>false</skipSortingImports>
                 <style>google</style>
             </configuration>

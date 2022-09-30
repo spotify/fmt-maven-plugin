@@ -31,8 +31,24 @@ public class FMTTest {
   }
 
   @Test
+  public void skipSource() throws Exception {
+    FMT fmt = loadMojo("skipsourcedirectory", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test
   public void withoutTestSources() throws Exception {
     FMT fmt = loadMojo("notestsource", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(2);
+  }
+
+  @Test
+  public void skipTestSources() throws Exception {
+    FMT fmt = loadMojo("skiptestsourcedirectory", FORMAT);
     fmt.execute();
 
     assertThat(fmt.getResult().processedFiles()).hasSize(2);
@@ -196,6 +212,18 @@ public class FMTTest {
   @Test(expected = MojoFailureException.class)
   public void checkFailsWhenNotFormatted() throws Exception {
     Check check = loadMojo("check_notformatted", CHECK);
+    check.execute();
+  }
+
+  @Test
+  public void checkSucceedsWhenSkipSourceDirectory() throws Exception {
+    Check check = loadMojo("check_skipsourcedirectory", CHECK);
+    check.execute();
+  }
+
+  @Test
+  public void checkSucceedsWhenSkipTestSourceDirectory() throws Exception {
+    Check check = loadMojo("check_skiptestsourcedirectory", CHECK);
     check.execute();
   }
 

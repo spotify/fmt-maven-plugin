@@ -47,6 +47,12 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = "false", property = "fmt.skip")
   private boolean skip = false;
 
+  @Parameter(defaultValue = "false", property = "skipSourceDirectory")
+  private boolean skipSourceDirectory = false;
+
+  @Parameter(defaultValue = "false", property = "skipTestSourceDirectory")
+  private boolean skipTestSourceDirectory = false;
+
   @Parameter(defaultValue = "false", property = "skipSortingImports")
   private boolean skipSortingImports = false;
 
@@ -90,12 +96,12 @@ public abstract class AbstractFMT extends AbstractMojo {
       getLog().info("Skipping sorting imports");
     }
     List<File> directoriesToFormat = new ArrayList<>();
-    if (sourceDirectory.exists()) {
+    if (sourceDirectory.exists() && !skipSourceDirectory) {
       directoriesToFormat.add(sourceDirectory);
     } else {
       handleMissingDirectory("Source", sourceDirectory);
     }
-    if (testSourceDirectory.exists()) {
+    if (testSourceDirectory.exists() && !skipTestSourceDirectory) {
       directoriesToFormat.add(testSourceDirectory);
     } else {
       handleMissingDirectory("Test source", testSourceDirectory);
