@@ -35,7 +35,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("skipsourcedirectory"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(1);
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
   }
 
   @Test
@@ -51,7 +51,7 @@ public class FMTTest {
     FMT fmt = (FMT) mojoRule.lookupConfiguredMojo(loadPom("skiptestsourcedirectory"), FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getFilesProcessed()).hasSize(2);
+    assertThat(fmt.getResult().processedFiles()).hasSize(2);
   }
 
   @Test
