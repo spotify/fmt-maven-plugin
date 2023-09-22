@@ -19,3 +19,7 @@ hs_err_pid*
 
 # compilation
 target/
+
+# mvn release files
+*.releaseBackup
+release.properties
