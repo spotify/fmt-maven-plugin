@@ -43,8 +43,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class FMTTest {
-  private static String FORMAT = "format";
-  private static String CHECK = "check";
+  private static final String FORMAT = "format";
+  private static final String CHECK = "check";
 
   @Rule public MojoRule mojoRule = new MojoRule();
 
@@ -200,6 +200,15 @@ public class FMTTest {
   @Test(expected = MojoFailureException.class)
   public void unsupportedForkMode() throws Exception {
     FMT fmt = loadMojo("unsupported_fork_mode", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test
+  public void switchWithArrows() throws Exception {
+    FMT fmt = loadMojo("switchwitharrows", FORMAT);
+
     fmt.execute();
 
     assertThat(fmt.getResult().processedFiles()).hasSize(1);
