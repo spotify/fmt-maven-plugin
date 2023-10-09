@@ -43,8 +43,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class FMTTest {
-  private static String FORMAT = "format";
-  private static String CHECK = "check";
+  private static final String FORMAT = "format";
+  private static final String CHECK = "check";
 
   @Rule public MojoRule mojoRule = new MojoRule();
 
@@ -177,7 +177,7 @@ public class FMTTest {
 
   @Test
   public void forkNeverBeforeJDK16() throws Exception {
-    assumeFalse(javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is needed.
+    assumeFalse(isJavaVersionEqualOrHigherThan("16")); // Skip if forking is needed.
     FMT fmt = loadMojo("fork_never_beforejdk16", FORMAT);
     assertThat(fmt.shouldFork()).isFalse();
     fmt.execute();
@@ -189,7 +189,7 @@ public class FMTTest {
       expected =
           IllegalAccessError.class) // Could stop throwing this if google-java-format is fixed.
   public void forkNeverAfterJDK16() throws Exception {
-    assumeTrue(javaRuntimeStronglyEncapsulatesByDefault()); // Skip if forking is not needed.
+    assumeTrue(isJavaVersionEqualOrHigherThan("16"));
     FMT fmt = loadMojo("fork_never_afterjdk16", FORMAT);
     assertThat(fmt.shouldFork()).isFalse();
     fmt.execute();
@@ -200,6 +200,16 @@ public class FMTTest {
   @Test(expected = MojoFailureException.class)
   public void unsupportedForkMode() throws Exception {
     FMT fmt = loadMojo("unsupported_fork_mode", FORMAT);
+    fmt.execute();
+
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
+  }
+
+  @Test
+  public void switchWithArrows() throws Exception {
+    assumeTrue(isJavaVersionEqualOrHigherThan("14"));
+    FMT fmt = loadMojo("switchwitharrows", FORMAT);
+
     fmt.execute();
 
     assertThat(fmt.getResult().processedFiles()).hasSize(1);
@@ -322,7 +332,7 @@ public class FMTTest {
     return spy;
   }
 
-  private static boolean javaRuntimeStronglyEncapsulatesByDefault() {
-    return Runtime.version().compareTo(Runtime.Version.parse("16")) >= 0;
+  private static boolean isJavaVersionEqualOrHigherThan(final String javaVersion) {
+    return Runtime.version().compareTo(Runtime.Version.parse(javaVersion)) >= 0;
   }
 }
