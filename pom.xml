@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.spotify</groupId>
     <artifactId>foss-root</artifactId>
-    <version>16</version>
+    <version>17</version>
   </parent>
 
   <groupId>com.spotify.fmt</groupId>
@@ -65,21 +65,8 @@
     <tag>HEAD</tag>
   </scm>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-
   <properties>
-    <maven.compiler.release>11</maven.compiler.release>
-    <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
-    <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
+    <java.version>11</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputTimestamp>1705916719</project.build.outputTimestamp>
     <maven.version>3.9.4</maven.version>
