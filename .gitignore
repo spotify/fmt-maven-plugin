@@ -23,3 +23,7 @@ target/
 # mvn release files
 *.releaseBackup
 release.properties
+
+
+# vscode
+.vscode/
