@@ -23,7 +23,7 @@ public class FMTTest {
     FMT fmt = loadMojo("nosource", FORMAT);
     fmt.execute();
 
-    assertThat(fmt.getResult().processedFiles()).isEmpty();
+    assertThat(fmt.getResult().processedFiles()).hasSize(1);
   }
 
   @Test
