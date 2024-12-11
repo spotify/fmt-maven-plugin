@@ -47,6 +47,10 @@ interface FormattingConfiguration extends Serializable {
   String filesPathPattern();
 
   boolean skipSortingImports();
+  
+  boolean skipRemovingUnusedImports();
+  
+  boolean skipReflowingLongStrings();
 
   boolean writeReformattedFiles();
 
