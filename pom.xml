@@ -66,7 +66,7 @@
   </scm>
 
   <properties>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputTimestamp>1728284791</project.build.outputTimestamp>
     <maven.version>3.9.6</maven.version>
@@ -87,7 +87,7 @@
     <dependency>
       <groupId>com.google.googlejavaformat</groupId>
       <artifactId>google-java-format</artifactId>
-      <version>1.24.0</version>
+      <version>1.26.0</version>
     </dependency>
 
     <dependency>
