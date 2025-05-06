@@ -33,6 +33,8 @@ import com.google.googlejavaformat.java.ImportOrderer;
 import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.google.googlejavaformat.java.JavaFormatterOptions.Style;
 import com.google.googlejavaformat.java.RemoveUnusedImports;
+import com.google.googlejavaformat.java.StringWrapper;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -154,9 +156,14 @@ class Formatter {
     try {
       String input = source.read();
       String formatted = formatter.formatSource(input);
-      formatted = RemoveUnusedImports.removeUnusedImports(formatted);
+      if (!cfg.skipRemovingUnusedImports()) {
+          formatted = RemoveUnusedImports.removeUnusedImports(formatted);
+      }
       if (!cfg.skipSortingImports()) {
         formatted = ImportOrderer.reorderImports(formatted, style);
+      }
+      if (!cfg.skipReflowingLongStrings()) {
+          formatted = StringWrapper.wrap(formatted, formatter);
       }
       if (!input.equals(formatted)) {
         if (cfg.writeReformattedFiles()) {
