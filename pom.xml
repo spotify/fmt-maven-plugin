@@ -18,6 +18,17 @@
   </description>
   <url>http://github.com/spotify/fmt-maven-plugin</url>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>central</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>central</id>
+      <url>https://central.sonatype.com/repository/maven-releases/</url>
+    </repository>
+  </distributionManagement>
+
   <licenses>
     <license>
       <name>MIT License</name>
@@ -179,6 +190,29 @@
             <goals>
               <goal>helpmojo</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+          <centralBaseUrl>https://central.sonatype.com</centralBaseUrl>
+          <autoPublish>true</autoPublish>
+          <waitUntil>published</waitUntil>
+          <deploymentName>fmt-maven-plugin deployment</deploymentName>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>injected-nexus-deploy</id>
+            <phase>none</phase>
           </execution>
         </executions>
       </plugin>
