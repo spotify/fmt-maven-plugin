@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.spotify</groupId>
     <artifactId>foss-root</artifactId>
-    <version>17</version>
+    <version>18-SNAPSHOT</version>
   </parent>
 
   <groupId>com.spotify.fmt</groupId>
