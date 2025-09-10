@@ -38,6 +38,11 @@
 
   <developers>
     <developer>
+      <name>Andreas Folkesson</name>
+      <organization>Spotify</organization>
+      <organizationUrl>http://github.com/spotify</organizationUrl>
+    </developer>
+    <developer>
       <name>Caesar Ralf</name>
       <organization>Spotify</organization>
       <organizationUrl>http://github.com/spotify</organizationUrl>
