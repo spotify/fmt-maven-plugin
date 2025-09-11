@@ -32,10 +32,22 @@ To have your sources automatically formatted on each build, add to your pom.xml:
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.googlejavaformat</groupId>
+                        <artifactId>google-java-format</artifactId>
+                        <version>1.27.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
 ```
+
+The inclusion of the `google-java-format` as a dependency allows you to control that version,
+which is generally recommended, so that you can align it with the exact version used in your
+IDE, pre-commit Git hook, etc. (If you are fine getting "whatever version `fmt-maven-plugin`
+uses" then you could omit it.)
 
 If you prefer, you can only check formatting at build time using the `check` goal:
 
