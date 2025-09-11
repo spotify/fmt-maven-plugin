@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.spotify</groupId>
     <artifactId>foss-root</artifactId>
-    <version>17</version>
+    <version>18</version>
   </parent>
 
   <groupId>com.spotify.fmt</groupId>
@@ -26,6 +26,11 @@
   </licenses>
 
   <developers>
+    <developer>
+      <name>Andreas Folkesson</name>
+      <organization>Spotify</organization>
+      <organizationUrl>http://github.com/spotify</organizationUrl>
+    </developer>
     <developer>
       <name>Caesar Ralf</name>
       <organization>Spotify</organization>
