@@ -87,14 +87,7 @@
     <dependency>
       <groupId>com.google.googlejavaformat</groupId>
       <artifactId>google-java-format</artifactId>
-      <version>1.26.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>io.norberg</groupId>
-      <artifactId>auto-matter</artifactId>
-      <version>0.26.2</version>
-      <scope>provided</scope>
+      <version>1.28.0</version>
     </dependency>
 
     <dependency>
@@ -130,7 +123,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>5.11.0</version>
+      <version>5.19.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -26,12 +26,10 @@
 
 package com.spotify.fmt;
 
-import io.norberg.automatter.AutoMatter;
 import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
-@AutoMatter
 interface FormattingConfiguration extends Serializable {
 
   boolean debug();
