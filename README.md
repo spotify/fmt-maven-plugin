@@ -107,6 +107,10 @@ For example, you may prefer that the `check` goal is performed in an earlier pha
 
 `skip` is whether the plugin should skip the operation.
 
+`skipReflowingLongStrings` is whether the plugin should skip reflowing long strings. It defaults to `false`.
+
+`skipRemovingUnusedImports` is whether the plugin should skip removing unused imports. It defaults to `true`.
+
 `skipSortingImports` is whether the plugin should skip sorting imports.
 
 `skipSourceDirectory` is whether the plugin should skip formatting/checking the `sourceDirectory`. It defaults to `false`.
@@ -138,6 +142,8 @@ example:
                 <skipSourceDirectory>false</skipSourceDirectory>
                 <skipTestSourceDirectory>false</skipTestSourceDirectory>
                 <skipSortingImports>false</skipSortingImports>
+                <skipRemovingUnusedImports>true</skipRemovingUnusedImports>
+                <skipReflowingLongStrings>false</skipReflowingLongStrings>
                 <style>google</style>
             </configuration>
             <executions>

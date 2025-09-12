@@ -82,6 +82,12 @@ public abstract class AbstractFMT extends AbstractMojo {
   @Parameter(defaultValue = "false", property = "skipSortingImports")
   private boolean skipSortingImports = false;
 
+  @Parameter(defaultValue = "false", property = "skipRemovingUnusedImports")
+  private boolean skipRemovingUnusedImports = false;
+
+  @Parameter(defaultValue = "true", property = "skipReflowingLongStrings")
+  private boolean skipReflowingLongStrings = true;
+
   @Parameter(defaultValue = "google", property = "style")
   private String style;
 
@@ -121,6 +127,12 @@ public abstract class AbstractFMT extends AbstractMojo {
     if (skipSortingImports) {
       getLog().info("Skipping sorting imports");
     }
+    if (skipRemovingUnusedImports) {
+        getLog().info("Skipping removing unused imports");
+      }
+    if (skipReflowingLongStrings) {
+        getLog().info("Skipping reflowing long strings");
+      }
     List<File> directoriesToFormat = new ArrayList<>();
     if (sourceDirectory.exists() && !skipSourceDirectory) {
       directoriesToFormat.add(sourceDirectory);
@@ -150,6 +162,8 @@ public abstract class AbstractFMT extends AbstractMojo {
             .filesPathPattern(filesPathPattern)
             .verbose(verbose)
             .skipSortingImports(skipSortingImports)
+            .skipRemovingUnusedImports(skipRemovingUnusedImports)
+            .skipReflowingLongStrings(skipReflowingLongStrings)
             .writeReformattedFiles(shouldWriteReformattedFiles())
             .processingLabel(getProcessingLabel())
             .build();
